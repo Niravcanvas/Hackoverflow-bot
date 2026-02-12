@@ -25,7 +25,7 @@ export async function askLLM(userQuery: string, userId?: string): Promise<string
     
     if (lastRequest && (now - lastRequest) < COOLDOWN_MS) {
       const waitTime = Math.ceil((COOLDOWN_MS - (now - lastRequest)) / 1000);
-      return `⏱️ Please wait ${waitTime} seconds before asking another question!`;
+      return `Please wait ${waitTime} seconds before asking another question.`;
     }
     
     userCooldowns.set(userId, now);
@@ -44,15 +44,17 @@ HACKATHON INFORMATION:
 ${JSON.stringify(hackathonData, null, 2)}
 
 INSTRUCTIONS:
-- Be friendly, helpful, and enthusiastic about the hackathon
-- Answer questions accurately based on the provided hackathon data above
-- If you don't have specific information, say so and suggest contacting the team at hackoverflow@mes.ac.in
-- Keep responses concise and clear (ideally under 300 words)
-- Use emojis occasionally to be engaging but don't overdo it
-- If asked about registration, remind them the deadline is January 31
-- If asked about the theme, mention it will be announced soon
-- Encourage participation and highlight the ₹100,000+ prize pool and learning opportunities
-- Be supportive of beginners and emphasize that all skill levels are welcome`;
+- Provide clear, direct answers based on the hackathon data above
+- Keep responses concise and conversational - answer only what was asked
+- Use 1-2 sentences for simple questions, expand only when necessary
+- Write in a professional but natural tone, as if you're having a real conversation
+- Avoid unnecessary emojis - use sparingly (max 1-2 per response, only when it adds value)
+- If information is missing, briefly say so and provide the contact email: hackoverflow@mes.ac.in
+- For registration questions, mention the January 31 deadline
+- For theme questions, note it will be announced soon
+- Don't over-explain or add extra encouragement unless specifically asked
+- Focus on answering the specific question asked, not everything about the hackathon
+- Use proper grammar and maintain a professional tone throughout`;
 
     const client = getGroqClient();
     const chatCompletion = await client.chat.completions.create({
@@ -67,14 +69,14 @@ INSTRUCTIONS:
         },
       ],
       model: "llama-3.3-70b-versatile",
-      temperature: 0.7,
-      max_tokens: 500,
+      temperature: 0.5,
+      max_tokens: 400,
     });
 
     const response = chatCompletion.choices[0]?.message?.content || '';
     
     if (!response) {
-      return 'Sorry, I could not generate a response. Please try again!';
+      return 'Sorry, I could not generate a response. Please try again.';
     }
 
     return response.trim();
@@ -83,15 +85,15 @@ INSTRUCTIONS:
     
     // Handle rate limit errors
     if (error?.status === 429) {
-      return '⚠️ Too many requests! Please wait a moment and try again.';
+      return 'Too many requests. Please wait a moment and try again.';
     }
     
     if (error?.status === 401) {
       console.error('⚠️ Invalid Groq API key!');
-      return '⚠️ AI service configuration error. Please contact hackoverflow@mes.ac.in';
+      return 'AI service configuration error. Please contact hackoverflow@mes.ac.in';
     }
     
-    return '⚠️ The AI service is currently unavailable. Please try again in a moment.';
+    return 'The AI service is currently unavailable. Please try again in a moment.';
   }
 }
 
