@@ -23,7 +23,7 @@ const client = new Client({
 // Bot ready event
 client.once('ready', async () => {
   console.log('╔════════════════════════════════════════╗');
-  console.log('║   🤖 HackOverflow Bot is Online! 🤖   ║');
+  console.log('║      🤖 Kernel Bot is Online! 🤖      ║');
   console.log('╚════════════════════════════════════════╝');
   console.log(`📝 Logged in as: ${client.user?.tag}`);
   console.log(`🌐 Serving ${client.guilds.cache.size} server(s)`);
@@ -32,11 +32,10 @@ client.once('ready', async () => {
   console.log('');
 
   // Set bot status
-  client.user?.setPresence({
-    activities: [{ name: `${PREFIX}help | @mention me for AI help!` }],
-    status: 'online',
-  });
-
+client.user?.setPresence({
+  activities: [{ name: `${PREFIX}help | @mention me for AI help!` }],
+  status: 'online',
+});
   // Check Groq health
   console.log('🔍 Checking Groq API connection...');
   const groqHealthy = await checkGroqHealth();
@@ -60,13 +59,13 @@ async function handleScheduleCommand(message: Message): Promise<void> {
   const { schedule } = hackathonData;
   
   const embed = new EmbedBuilder()
-    .setColor('#4ECDC4')
-    .setTitle('📅 HackOverflow 4.0 Schedule')
-    .setDescription('Your complete 3-day hackathon timeline')
+    .setColor('#FF6B35')
+    .setTitle('🤖 Kernel Bot - Help Guide')
+    .setDescription('Hey there! I\'m your HackOverflow assistant. Here\'s how to use me:')
     .addFields(
       {
-        name: `📍 Day 1 - ${schedule.day1.date} (Kickoff & Hacking)`,
-        value: schedule.day1.events.map(e => `• ${e.time} - ${e.event}`).join('\n'),
+        name: '💬 Ask Me Anything (AI-Powered)',
+        value: 'Just mention me (@Kernel) and ask your question!\nExample: `@Kernel when is the hackathon?`',
       },
       {
         name: `📍 Day 2 - ${schedule.day2.date} (Mid-Evaluation)`,
