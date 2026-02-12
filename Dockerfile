@@ -1,4 +1,4 @@
-# Use official Node.js LTS image
+# Use Node.js 18 Alpine for smaller image size
 FROM node:18-alpine
 
 # Set working directory
@@ -8,20 +8,24 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install ALL dependencies (including devDependencies for TypeScript compilation)
+RUN npm ci
 
 # Copy source code
 COPY src ./src
 
-# Build TypeScript
+# Build TypeScript to JavaScript
 RUN npm run build
 
-# Remove dev dependencies and source files to reduce image size
-RUN npm prune --production && rm -rf src tsconfig.json
+# Remove devDependencies after build to reduce image size
+RUN npm prune --production
 
-# Set environment to production
-ENV NODE_ENV=production
+# Expose port (optional, not needed for Discord bot but good practice)
+EXPOSE 3000
 
-# Run the bot
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "console.log('healthy')" || exit 1
+
+# Start the bot
 CMD ["node", "dist/index.js"]
