@@ -455,15 +455,6 @@ const { name, statistics } = hackathonData;
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/)
 - [Node-cron Documentation](https://www.npmjs.com/package/node-cron)
 
----
-
-## Support
-
-- Email: hackoverflow@mes.ac.in
-- GitHub Issues: github.com/YOUR_USERNAME/hackoverflow-bot/issues
-
----
-
 <div align="center">
 
 **Made with TypeScript, Discord.js, and Groq AI**
