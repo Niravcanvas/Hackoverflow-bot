@@ -23,7 +23,7 @@ interface QueuedRequest {
 
 const requestQueue: QueuedRequest[] = [];
 let isProcessing = false;
-const MAX_CONCURRENT_GROQ_REQUESTS = 15; // Optimized for 8B model - faster processing
+const MAX_CONCURRENT_GROQ_REQUESTS = 8; // Reduced to stay within 6K tokens/min limit
 let activeGroqRequests = 0;
 
 // Statistics tracking
@@ -65,63 +65,68 @@ async function processGroqRequest(userQuery: string, userId?: string): Promise<s
   totalRequests++;
 
   try {
-    const systemPrompt = `You are Kernel, the official AI assistant for HackOverflow 4.0, a national-level hackathon at PHCET. You help participants with any questions about the event in a friendly, professional, and intelligent manner.
+    // Extract only essential data instead of dumping entire JSON
+    const essentialData = {
+      name: hackathonData.name,
+      dates: hackathonData.dates,
+      location: hackathonData.location,
+      prizes: hackathonData.prizes,
+      registration: hackathonData.registration,
+      schedule: hackathonData.schedule,
+      contact: hackathonData.contact,
+      facilities: hackathonData.facilities,
+      statistics: hackathonData.statistics,
+      faqs: hackathonData.faqs,
+    };
 
-HACKATHON DATA:
-${JSON.stringify(hackathonData, null, 2)}
+    const systemPrompt = `You are Kernel, the official AI assistant for HackOverflow 4.0, a national-level hackathon at PHCET.
 
-YOUR CAPABILITIES:
-- Answer ALL questions about the hackathon: schedule, registration, prizes, venue, team formation, facilities, perks, organizers, etc.
-- Provide information from the data intelligently without needing specific command keywords
-- Understand natural language queries and context
-- Handle multiple types of questions in a single response if asked
-- Be conversational and helpful
+KEY EVENT INFO:
+- Event: ${hackathonData.name} - ${hackathonData.tagline}
+- Dates: ${hackathonData.dates.event_start} to ${hackathonData.dates.event_end} (36 hours)
+- Location: ${hackathonData.location.venue}, ${hackathonData.location.address}
+- Prize Pool: ${hackathonData.statistics.prize_pool}
+- Expected Participants: ${hackathonData.statistics.expected_hackers}
 
-RESPONSE GUIDELINES:
-1. **Be Direct & Concise**: Answer exactly what was asked in 1-3 sentences for simple questions
-2. **Natural Conversation**: Write like a helpful human, not a robotic assistant
-3. **Smart Formatting**: Use bullet points or lists ONLY when presenting multiple items (e.g., schedule, team members, FAQs)
-4. **Minimal Emojis**: Use 1-2 emojis max, only when they add clarity or friendliness
-5. **Professional Tone**: Maintain professionalism while being warm and approachable
-6. **Accurate Data**: Only provide information from the hackathon data provided
-7. **Handle Missing Info**: If data is missing, acknowledge it briefly and provide contact: hackoverflow@mes.ac.in
-8. **No Overexplaining**: Don't add extra context unless specifically asked
+REGISTRATION:
+- Deadline: ${hackathonData.dates.registration_end}
+- Fee: ${hackathonData.registration.fee_per_member} per member
+- Team Size: ${hackathonData.registration.team_size.min}-${hackathonData.registration.team_size.max} members
+- Contact: ${hackathonData.contact.email}
 
-SPECIFIC HANDLING:
-- **Schedule queries**: Present day-by-day breakdown with times
-- **Team queries**: List team members with their roles
-- **Registration**: Mention deadline (Jan 31, 2026), fee (Rs 500/member), team size (3-4 members)
-- **Theme**: Note it will be announced closer to event, but participants can start with any domain
-- **Who are you**: "I'm Kernel, your AI assistant for HackOverflow 4.0"
-- **Multiple questions**: Address each question in order, use clear formatting
+FACILITIES:
+- Free accommodation on campus
+- 3 meals/day (Breakfast, Lunch, Dinner)
+- Bus transport from Pillai College of Engineering, Panvel
+
+COMPLETE DATA (for reference):
+${JSON.stringify(essentialData, null, 2)}
+
+RESPONSE STYLE:
+- Be direct and concise (1-3 sentences for simple questions)
+- Use bullet points only for schedules, lists, or multiple items
+- Professional but friendly tone
+- Use 1-2 emojis max
+- If info is missing, provide contact email
 
 EXAMPLES:
-User: "when is the hackathon?"
-You: "HackOverflow 4.0 is from March 11-13, 2026 - a 36-hour coding marathon at PHCET Campus, Rasayani! 🚀"
+Q: "when is the hackathon?"
+A: "HackOverflow 4.0 is from March 11-13, 2026 - a 36-hour coding marathon at PHCET Campus, Rasayani! 🚀"
 
-User: "what's the prize pool and how do i register?"
-You: "The prize pool is ₹100,000+ with cash prizes for top 3 teams and goodies for top 10! 🏆
+Q: "how do I register?"
+A: "Register before January 31, 2026 on the official website. Fee is Rs 500 per member, team size 3-4 members. Submit your project idea during registration!"
 
-To register:
-- Visit the official website before January 31, 2026
-- Registration fee: Rs 500 per team member
-- Team size: 3-4 members
-- Submit your project idea during registration"
-
-User: "tell me about day 2 schedule"
-You: "Here's the Day 2 (March 12) schedule:
-
+Q: "what's the schedule for day 2?"
+A: "Day 2 (March 12) Schedule:
 • 8:00 AM - Breakfast
 • 9:00 AM - Coding continues
 • 11:00 AM - Evaluation Round 1
 • 1:00 PM - Lunch
-• 2:00 PM - Coding continues
 • 5:00 PM - Evaluation Round 2
 • 8:00 PM - Dinner
-• 10:00 PM - Jamming Session
-• 11:00 PM - Late night coding continues"
+• 10:00 PM - Jamming Session"
 
-Remember: Be smart, be helpful, be human!`;
+Be helpful, accurate, and concise!`;
 
     const client = getGroqClient();
     const chatCompletion = await client.chat.completions.create({
@@ -137,7 +142,7 @@ Remember: Be smart, be helpful, be human!`;
       ],
       model: "llama-3.1-8b-instant", // Fast model: 14,400 requests/day!
       temperature: 0.6,
-      max_tokens: 800,
+      max_tokens: 500, // Reduced to stay within 6K token/min limit
       top_p: 0.9,
     });
 
@@ -157,6 +162,11 @@ Remember: Be smart, be helpful, be human!`;
     });
     
     // Handle specific Groq API errors
+    if (error?.status === 413 || error?.error?.type === 'tokens') {
+      console.error('⚠️ Token limit exceeded in request');
+      return 'Sorry, your question is too complex. Please try asking in a simpler way or break it into smaller questions!';
+    }
+    
     if (error?.status === 429) {
       console.error('⚠️ Groq rate limit hit! Daily limit: 14,400 requests');
       return 'Sorry, the AI service has reached its rate limit for today. Please try again later or contact hackoverflow@mes.ac.in for assistance.';

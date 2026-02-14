@@ -50,7 +50,7 @@ client.once('ready', async () => {
   console.log('✅ Bot initialization complete!');
   console.log('💡 Bot is command-less - AI handles all requests intelligently');
   console.log('🚀 Using llama-3.1-8b-instant - 14,400 requests/day capacity!');
-  console.log('⚡ 15 concurrent requests - ultra-fast responses!');
+  console.log('⚡ 8 concurrent requests - optimized for token limits!');
   console.log('════════════════════════════════════════\n');
 });
 
