@@ -48,8 +48,9 @@ client.once('ready', async () => {
   setupScheduledMessages(client);
 
   console.log('✅ Bot initialization complete!');
-  console.log('💡 Bot is now command-less - AI handles all requests intelligently');
-  console.log('💪 No user rate limits - Groq handles 14k requests/day!');
+  console.log('💡 Bot is command-less - AI handles all requests intelligently');
+  console.log('🚀 Using llama-3.1-8b-instant - 14,400 requests/day capacity!');
+  console.log('⚡ 15 concurrent requests - ultra-fast responses!');
   console.log('════════════════════════════════════════\n');
 });
 
