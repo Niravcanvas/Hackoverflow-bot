@@ -3,6 +3,37 @@
   "tagline": "A 36 hour sprint of innovation, code, and collaboration",
   "type": "National Level Hackathon",
   "organizer": "Pillai HOC College of Engineering & Technology (PHCET)",
+  "about": {
+    "phcet": {
+      "description": "Discover a state-of-the-art educational experience at Pillai HOC College of Engineering and Technology! Our expansive 14-acre campus provides a dynamic learning environment, boasting a 3,000 sq-ft facility equipped with spacious classrooms, cutting-edge laboratories, and contemporary computer setups. Immerse yourself in innovation with access to our extensive library, offering a wealth of resources to fuel your academic pursuits.",
+      "campus_size": "14 acres",
+      "facility_size": "3,000 sq-ft"
+    },
+    "computer_department": {
+      "description": "Our Computer Engineering Department, proudly approved by AICTE and DTE, holds NBA accreditation and an 'A+' Grade from NAAC. We aim to produce proficient, ethical, and innovative graduates. Emphasizing both theoretical and practical aspects, we prioritize problem-solving and eco-conscious research. Join us for globally recognized standards in education, shaping socially responsible and technically adept computer engineers.",
+      "accreditations": ["AICTE", "DTE", "NBA"],
+      "naac_grade": "A+"
+    },
+    "hackoverflow": "Get ready for HackOverflow 4.0! Following the success of the third edition in March 2025 at PHCET's campus, this National-level hackathon is back, attracting brilliant students from across India. Building on the triumph of its predecessor, HackOverflow 4.0 offers a dynamic platform for participants to showcase exceptional skills and ignite creativity in the evolving tech world."
+  },
+  "developer_communities": {
+    "gdg_phcet": {
+      "name": "Google Developers Group, PHCET",
+      "description": "The Google Developers Group (GDG), PHCET is a community for students interested in developing their skills in Google Developer technologies. The club holds activities to support students' academic success, including study jams, solution challenges and more."
+    },
+    "csi_phcet": {
+      "name": "Computer Society of India, PHCET",
+      "description": "The CSI PHCET Student Club is a student-led community at PHCET that aims to bring together students with an interest in technology and latest industry trends. The club conducts a variety of events and activities, including webinars, coding sessions and seminars to support the academic growth and development of its members."
+    },
+    "cybersecurity_club": {
+      "name": "Cybersecurity Club, PHCET",
+      "description": "The Cybersecurity Club, initiated by the Department of Computer Engineering, aims to build strong awareness and practical skills in the field of information security. The club has successfully organized events and workshops focused on ethical hacking, network security, and cyber awareness, helping students understand real-world security challenges and defense mechanisms."
+    },
+    "other_communities": {
+      "description": "In addition to these clubs, PHCET also has other computer science rated communities such as Geeks For Geeks- PHCET, AI and Data Analysis club which focus on educating students about the latest software trends and AI/Data analysis technologies respectively. These clubs provide students with a wealth of opportunities to explore their interest and develop their skills in variety of computer science related fields",
+      "clubs": ["GeeksForGeeks-PHCET", "AI and Data Analysis Club"]
+    }
+  },
   "location": {
     "venue": "PHCET Campus",
     "address": "Rasayani, Raigad, Maharashtra - 410207",
@@ -26,34 +57,90 @@
       "colleges": "50+",
       "completion_rate": "95%",
       "satisfaction": "4.9/5"
+    },
+    "hackoverflow_3_success": {
+      "event_dates": "20th - 22nd March, 2025",
+      "team_registrations": "650+",
+      "teams_participated": "60+",
+      "teams_shortlisted": "150",
+      "states_represented": "15+",
+      "social_media": {
+        "followers": "500+",
+        "content_views": "150k+",
+        "website_clicks": "3k+",
+        "interactive_views": "6,000+"
+      }
     }
+  },
+  "why_hackoverflow": {
+    "reasons": [
+      {
+        "title": "Real World Problem Solving",
+        "description": "Tackle real-world challenges and create impactful solutions"
+      },
+      {
+        "title": "Networking Opportunities",
+        "description": "Connect with like-minded tech enthusiasts and industry professionals"
+      },
+      {
+        "title": "Mentor Guided Innovation",
+        "description": "Get guidance from experienced mentors and industry experts"
+      },
+      {
+        "title": "Networking & Jamming Sessions",
+        "description": "Participate in collaborative sessions and build lasting connections"
+      },
+      {
+        "title": "Unforgettable Goodies",
+        "description": "Win exciting prizes, swags, and memorable experiences"
+      }
+    ]
   },
   "schedule": {
     "day1": {
       "date": "March 11",
       "events": [
-        { "time": "11:00 AM", "event": "Check In" },
-        { "time": "1:00 PM", "event": "Lunch" },
-        { "time": "2:00 PM", "event": "Orientation & Opening Ceremony" },
-        { "time": "4:00 PM", "event": "Lab Allotment" },
-        { "time": "5:00 PM", "event": "Hackathon Begins" },
-        { "time": "9:00 PM", "event": "Dinner" },
-        { "time": "10:00 PM", "event": "Networking" }
+        { "event": "Bus arrival", "start_time": "9:00 AM", "end_time": "11:00 AM" },
+        { "event": "Registrations", "start_time": "11:00 AM", "end_time": "12:00 PM" },
+        { "event": "Lunch", "start_time": "12:00 PM", "end_time": "1:45 PM" },
+        { "event": "Banner Reveal", "start_time": "1:20 PM", "end_time": "1:40 PM" },
+        { "event": "Opening Ceremony", "start_time": "2:00 PM", "end_time": "4:00 PM" },
+        { "event": "Lab Allotment", "start_time": "4:00 PM", "end_time": "5:00 PM" },
+        { "event": "Hackathon Begins", "start_time": "5:00 PM", "end_time": "9:00 PM" },
+        { "event": "Discussion Round", "start_time": "6:00 PM", "end_time": "7:30 PM" },
+        { "event": "High Tea", "start_time": "6:30 PM", "end_time": "7:00 PM" },
+        { "event": "Dinner", "start_time": "9:00 PM", "end_time": "10:00 PM" },
+        { "event": "Coding begins", "start_time": "11:00 PM", "end_time": "8:00 AM" }
       ]
     },
     "day2": {
       "date": "March 12",
       "events": [
-        { "time": "Morning", "event": "Coding Sprint Continues" },
-        { "time": "Afternoon", "event": "Mid-Evaluation & Networking" },
-        { "time": "Night", "event": "Night of Fun - Not just coding!" }
+        { "event": "Breakfast", "start_time": "8:00 AM", "end_time": "9:00 AM" },
+        { "event": "Coding starts", "start_time": "9:00 AM", "end_time": "1:00 PM" },
+        { "event": "Evaluation Round 1", "start_time": "11:00 AM", "end_time": "12:00 PM" },
+        { "event": "HOD Felicitation", "start_time": "12:30 PM", "end_time": "1:00 PM" },
+        { "event": "Lunch", "start_time": "1:00 PM", "end_time": "2:00 PM" },
+        { "event": "Coding continues", "start_time": "2:00 PM", "end_time": "9:00 PM" },
+        { "event": "Evaluation Round 2", "start_time": "5:00 PM", "end_time": "7:00 PM" },
+        { "event": "High Tea", "start_time": "6:00 PM", "end_time": "6:30 PM" },
+        { "event": "Dinner", "start_time": "8:00 PM", "end_time": "9:00 PM" },
+        { "event": "Jamming Session", "start_time": "10:00 PM", "end_time": "11:30 PM" },
+        { "event": "Coding continues", "start_time": "11:00 PM", "end_time": "7:00 AM" }
       ]
     },
     "day3": {
       "date": "March 13",
       "events": [
-        { "time": "Morning", "event": "Grand Finale & Judging" },
-        { "time": "Afternoon", "event": "Winner Announcement & Valedictory" }
+        { "event": "Submission", "start_time": "7:00 AM", "end_time": "8:00 AM" },
+        { "event": "Breakfast", "start_time": "8:00 AM", "end_time": "9:00 AM" },
+        { "event": "Judging Round", "start_time": "9:00 AM", "end_time": "11:00 AM" },
+        { "event": "Lunch", "start_time": "11:30 AM", "end_time": "1:00 PM" },
+        { "event": "Final Evaluation Audi", "start_time": "1:00 PM", "end_time": "2:00 PM" },
+        { "event": "Closing Ceremony", "start_time": "2:00 PM", "end_time": "5:00 PM" },
+        { "event": "Certificate Distribution", "start_time": "4:30 PM", "end_time": "" },
+        { "event": "Bus Drop", "start_time": "6:00 PM", "end_time": "" },
+        { "event": "Hackathon Ends", "start_time": "", "end_time": "" }
       ]
     }
   },
@@ -63,6 +150,79 @@
     "Blockchain": "15%",
     "IoT": "15%",
     "Other": "10%"
+  },
+  "prizes": {
+    "prize_pool": "Rs 1,00,000 + Cash & Goodies",
+    "top_3_teams": "Cash Prizes",
+    "top_10_teams": "Extra Swags & Goodies"
+  },
+  "facilities": {
+    "transport": {
+      "description": "Bus facility for pickup from Pillai College of Engineering, Panvel",
+      "pickup_location": "Pillai College of Engineering, Panvel"
+    },
+    "accommodation": {
+      "description": "Free accommodation facility within the Campus",
+      "type": "Free",
+      "location": "Within Campus"
+    },
+    "food": {
+      "description": "Daily 3 meals (Breakfast, Lunch, Dinner) available within Campus",
+      "meals_per_day": 3,
+      "meal_types": ["Breakfast", "Lunch", "Dinner"]
+    }
+  },
+  "perks": {
+    "skill_development": {
+      "title": "Save Money, Master new skills",
+      "description": "Join our group and you might win special discounts and get access to courses that helps you master new skills."
+    },
+    "surprise_gifts": {
+      "title": "Fun Surprise Gifts",
+      "description": "When you join our events or do fun things with us, we have surprise gifts waiting just for you."
+    },
+    "free_goodies": {
+      "title": "Free Goodies for Everyone",
+      "description": "Just for being part of Hackathon, everyone gets free goodies. It's our way of saying thanks for being with us."
+    },
+    "certificates": {
+      "title": "Certificates for All Participants and Winners",
+      "description": "Not only do you get cool stuff, but every participant also gets a certificate. Plus, the winning team gets a special certificate for their awesome achievement!"
+    }
+  },
+  "registration": {
+    "fee_per_member": "Rs 500",
+    "team_size": {
+      "min": 3,
+      "max": 4
+    },
+    "process": [
+      {
+        "step": 1,
+        "title": "Registration",
+        "description": "The registration fee is set at Rs 500 per team member, and each team can consist of 3 to 4 members. Please ensure accurate information is provided during registration."
+      },
+      {
+        "step": 2,
+        "title": "Project Idea Submission",
+        "description": "Each team is required to submit a comprehensive project idea that aligns with the theme of the Hackathon."
+      },
+      {
+        "step": 3,
+        "title": "Evaluation Criteria",
+        "description": "We will evaluate the project ideas based on creativity, technical feasibility, and relevance to the theme."
+      },
+      {
+        "step": 4,
+        "title": "Selection Announcement",
+        "description": "Shortlisted teams will receive detailed instructions and further steps on their registered email address."
+      },
+      {
+        "step": 5,
+        "title": "Payment Confirmation",
+        "description": "Selected teams are required to pay the registration fee of Rs 500 per team member to secure their team's position in hackathon."
+      }
+    ]
   },
   "team": {
     "leads": [
@@ -89,8 +249,143 @@
       { "name": "Advait Patil - also knows as ADY the Blender guy", "role": "Motion Graphics Head" }
     ]
   },
+  "team_members": {
+    "student_coordinators": [
+      { "name": "Shreyanshi Srivastava", "designation": "Student coordinator", "year": "BE B" },
+      { "name": "Yash Kumbhar", "designation": "Student Coordinator", "year": "BE B" }
+    ],
+    "pr_team": {
+      "heads": [
+        { "name": "Anushka Kadam", "designation": "PR Head", "year": "BE A" },
+        { "name": "Tanay Jadhav", "designation": "PR Head", "year": "BE A" }
+      ],
+      "members": [
+        { "name": "Midhun Mohandas", "designation": "PR Team Member", "year": "TE A" },
+        { "name": "Harsh Patil", "designation": "PR Team Member", "year": "TE - B" },
+        { "name": "Mohammad Sonde", "designation": "PR TEAM MEMBER", "year": "SE C" },
+        { "name": "Parth Verma", "designation": "PR Team Member", "year": "SE-B" },
+        { "name": "Janhvi", "designation": "PR Team Member", "year": "TE - A" },
+        { "name": "Aditya Pandey", "designation": "PR Team Member", "year": "TE - B" },
+        { "name": "Sampriti Dogra", "designation": "PR Team Member", "year": "TE A" },
+        { "name": "Sourabh Gokave", "designation": "PR Team Member", "year": "TE A" },
+        { "name": "Pratik Nikam", "designation": "PR Team Member", "year": "SE-B" },
+        { "name": "Suman", "designation": "PR Team Member", "year": "SE-A" }
+      ]
+    },
+    "graphics_team": {
+      "head": [
+        { "name": "Viraj Kadam", "designation": "Graphics Head", "year": "BE A" }
+      ],
+      "members": [
+        { "name": "Advait Patil", "designation": "Graphics team member", "year": "TE B" },
+        { "name": "Aarya Karpe", "designation": "Graphics Team Member", "year": "SE-A" },
+        { "name": "Manasi Patil", "designation": "Graphics team member", "year": "SE B" },
+        { "name": "Sushant", "designation": "Graphics Team Member", "year": "SE - A" }
+      ]
+    },
+    "publicity_team": {
+      "head": [
+        { "name": "Shagun Jha", "designation": "Publicity and management Head", "year": "BE A" }
+      ],
+      "members": [
+        { "name": "Tanvi Gharat", "designation": "publicity member", "year": "TE A" },
+        { "name": "Atharav", "designation": "Publicity Team Member", "year": "TE B" },
+        { "name": "Yash Torane", "designation": "Publicity Team Member", "year": "TE C" },
+        { "name": "Chetan Jadhav", "designation": "Publicity Team Member", "year": "TE A" },
+        { "name": "Parth More", "designation": "Publicity Team Member", "year": "SE-B" },
+        { "name": "Smit", "designation": "publicity team member", "year": "SE-B" },
+        { "name": "Mansi Phalak", "designation": "publicity team member", "year": "SE-B" },
+        { "name": "Prathamesh Pabale", "designation": "Publicity Team Member", "year": "TE - B" },
+        { "name": "Pragati Patil", "designation": "Publicity Team Member", "year": "SE-B" }
+      ]
+    },
+    "management_team": {
+      "members": [
+        { "name": "Kunal Mahajan", "designation": "Management Team Member", "year": "SE-B" },
+        { "name": "Aayush Gunjal", "designation": "Management Team Member", "year": "TE A" }
+      ]
+    },
+    "event_team": {
+      "head": [
+        { "name": "Parth Bhoir", "designation": "Event", "year": "TE A" }
+      ],
+      "members": [
+        { "name": "Saksham Tiwari", "designation": "Event team member", "year": "TE C" },
+        { "name": "Richa", "designation": "Event team member", "year": "TE C" },
+        { "name": "Amar Tiwari", "designation": "event team member", "year": "SE - C" }
+      ]
+    },
+    "decor_team": {
+      "head": [
+        { "name": "Disha Thombare", "designation": "Decor Head", "year": "BE A" }
+      ],
+      "incharge": [
+        { "name": "Darin", "designation": "Decor Incharge", "year": "TE - C" }
+      ],
+      "members": [
+        { "name": "Devayani", "designation": "Decor team member", "year": "SE - C" },
+        { "name": "Arpita", "designation": "Decor team member", "year": "SE-C" },
+        { "name": "Pooja Patil", "designation": "Decor team member", "year": "TE - B" },
+        { "name": "prarthana", "designation": "Decor team member", "year": "SE-B" },
+        { "name": "purva", "designation": "Decor Team Member", "year": "SE-B" },
+        { "name": "Sharayu", "designation": "Decor Team Member", "year": "TE - C" },
+        { "name": "Sanika Surve", "designation": "Decor team member", "year": "TE - B" },
+        { "name": "Shruti Patil", "designation": "Decor Team Member", "year": "TE - C" },
+        { "name": "Shruti", "designation": "Decor Team Member", "year": "SE - A" },
+        { "name": "Shubham", "designation": "Decor", "year": "TE -C" },
+        { "name": "Siddhi Gharat", "designation": "Decor Team member", "year": "TE A" },
+        { "name": "Soham", "designation": "Decor Team member", "year": "TE - C" },
+        { "name": "Vedanti", "designation": "Decor Team member", "year": "TE - C" },
+        { "name": "Vrushali Patil", "designation": "Decor Team Member", "year": "SE-B" },
+        { "name": "Shardul Thombare", "designation": "Decoration Team Member", "year": "SE-B" }
+      ]
+    },
+    "technical_team": {
+      "head": [
+        { "name": "Vinayak Sawant", "designation": "Technical Head", "year": "BE B" }
+      ],
+      "members": [
+        { "name": "Rohit Potdar", "designation": "Technical team member", "year": "T.E - C" },
+        { "name": "Diksha Thorve", "designation": "Technical Team member", "year": "SE-B" },
+        { "name": "Diksha Mhaskar", "designation": "Technical team member", "year": "SE-B" },
+        { "name": "Vivek Kokambe", "designation": "Technical team member", "year": "SE-B" }
+      ]
+    },
+    "media_team": {
+      "members": [
+        { "name": "Paras Thakur", "designation": "Media", "year": "TE-C" },
+        { "name": "Rohan", "designation": "Media", "year": "TE A" },
+        { "name": "Sanskar", "designation": "Media", "year": "TE C" },
+        { "name": "Sujal Bhandarge", "designation": "Media", "year": "SE A" },
+        { "name": "Rohit", "designation": "Media", "year": "SE-B" }
+      ]
+    },
+    "documentation_team": {
+      "head": [
+        { "name": "Pallavi", "designation": "Documentation Head", "year": "TE B" }
+      ],
+      "coordinator": [
+        { "name": "Shreesh Vichare", "designation": "Documentation Coordinator", "year": "TE C" }
+      ]
+    },
+    "finance_team": {
+      "members": [
+        { "name": "Ashutosh Chavan", "designation": "Finance", "year": "TE A" }
+      ]
+    }
+  },
   "contact": {
-    "email": "hackoverflow@mes.ac.in"
+    "email": "hackoverflow@mes.ac.in",
+    "phone": {
+      "aayush_gunjal": "+91-93726 63885",
+      "chetan_jadhav": "+91-98673 55895"
+    },
+    "social_media": {
+      "instagram": "@hackoverflow.tech",
+      "linkedin": "@HackOverflow",
+      "twitter": "@HackOverflow_",
+      "website": "@hackoverflow_tech"
+    }
   },
   "faqs": [
     {
@@ -99,11 +394,11 @@
     },
     {
       "question": "How to register for the offline track?",
-      "answer": "Registration is open from December 25 to January 31. Visit the official website to register."
+      "answer": "Registration is open from December 25 to January 31. Visit the official website to register. The registration fee is Rs 500 per team member."
     },
     {
       "question": "What is the maximum number of members allowed in a team?",
-      "answer": "Teams typically consist of 2-4 members. Check the official guidelines for exact numbers."
+      "answer": "Teams consist of 3 to 4 members."
     },
     {
       "question": "How long is the hackathon going to last?",
@@ -111,7 +406,7 @@
     },
     {
       "question": "What are the perks every participant is going to get?",
-      "answer": "Participants get access to mentorship, networking opportunities, meals, accommodation arrangements, and chances to win from a prize pool of ₹100,000+."
+      "answer": "Participants get access to mentorship, networking opportunities, meals, free accommodation within campus, transport facilities, certificates, free goodies, and chances to win from a prize pool of ₹100,000+."
     },
     {
       "question": "Will there be any mentorship sessions?",
@@ -119,7 +414,15 @@
     },
     {
       "question": "What food arrangements are in place?",
-      "answer": "Lunch and dinner will be provided during the event. Check the schedule for exact timings."
+      "answer": "Daily 3 meals (Breakfast, Lunch, Dinner) will be provided during the event within the campus."
+    },
+    {
+      "question": "Is accommodation provided?",
+      "answer": "Yes, free accommodation facility is available within the campus for all participants."
+    },
+    {
+      "question": "Is transportation provided?",
+      "answer": "Yes, bus facility for pickup from Pillai College of Engineering, Panvel is available."
     }
   ],
   "theme": {
