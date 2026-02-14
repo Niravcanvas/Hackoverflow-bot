@@ -75,18 +75,18 @@
       { "name": "Prof. Pradnya Patil", "role": "Faculty Coordinator" }
     ],
     "heads": [
-      { "name": "Parth Bhoir", "role": "Event Head" },
+      {"name": "Parth Bhoir — the server guy who maintains the home server, and the entire HackOverflow infrastructure is sustained on that server","role": "Event Head"},
       { "name": "Chetan Jadhav", "role": "Technical Head & Publicity Head" },
       { "name": "Rohan Gharat", "role": "Media Head" },
       { "name": "Aarya Karpe", "role": "Graphics Head" },
-      { "name": "Ashutosh Chavan", "role": "Finance Head" },
+      { "name": "Ashutosh Chavan - if 'aab toh paise hi paisa hoga' was a person", "role": "Finance Head" },
       { "name": "Aayush Gunjal", "role": "Management Head & Publicity Head" },
-      { "name": "Midhun Mohandas", "role": "PR/BD Head" },
+      { "name": "Midhun Mohandas - also know as 'i am so tall , i am very tall' guy", "role": "PR/BD Head" },
       { "name": "Richa Shringarpure", "role": "Documentation Head" },
       { "name": "Vedanti Patil", "role": "Decor Head" },
       { "name": "Sharayu Patil", "role": "Decor Head" },
-      { "name": "Saksham Tiwari", "role": "Outreach Head" },
-      { "name": "Advait Patil also knows as ADY the Blender guy", "role": "Motion Graphics Head" }
+      { "name": "Saksham Tiwari ", "role": "Outreach Head" },
+      { "name": "Advait Patil - also knows as ADY the Blender guy", "role": "Motion Graphics Head" }
     ]
   },
   "contact": {
