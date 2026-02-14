@@ -150,24 +150,37 @@ Remember: Be smart, be helpful, be human!`;
     return response.trim();
   } catch (error: any) {
     console.error('❌ Error calling Groq:', error);
+    console.error('Error details:', {
+      status: error?.status,
+      message: error?.message,
+      error: error?.error,
+    });
     
     // Handle specific Groq API errors
     if (error?.status === 429) {
-      // Groq rate limit hit - this is the only rate limit we respect
-      return 'The AI service is experiencing high traffic right now. Please try again in a moment. ⏳';
+      console.error('⚠️ Groq rate limit hit! Check your API key limits at https://console.groq.com');
+      return 'Sorry, the AI service has reached its rate limit. This usually means:\n• The API key needs to be checked\n• Free tier limits were exceeded\nPlease contact hackoverflow@mes.ac.in for assistance.';
     }
     
     if (error?.status === 401) {
       console.error('⚠️ Invalid Groq API key!');
-      return 'AI service configuration error. Please contact hackoverflow@mes.ac.in for assistance.';
+      return 'AI service authentication failed. Please contact hackoverflow@mes.ac.in for assistance.';
+    }
+
+    if (error?.status === 403) {
+      console.error('⚠️ Groq API access forbidden!');
+      return 'AI service access denied. Please contact hackoverflow@mes.ac.in for assistance.';
     }
 
     if (error?.status === 503) {
       return 'The AI service is temporarily unavailable. Please try again in a moment.';
     }
     
+    // Log full error for debugging
+    console.error('Full error object:', JSON.stringify(error, null, 2));
+    
     // Generic error
-    throw error;
+    return `Sorry, I encountered an error: ${error?.message || 'Unknown error'}. Please contact hackoverflow@mes.ac.in for assistance.`;
   }
 }
 
@@ -188,26 +201,32 @@ export async function askLLM(userQuery: string, userId?: string): Promise<string
 
 // Health check function with retry logic
 export async function checkGroqHealth(): Promise<boolean> {
-  const maxRetries = 3;
+  // Don't do aggressive health checks - they use up quota
+  const maxRetries = 1; // Reduced from 3
   let retries = 0;
 
   while (retries < maxRetries) {
     try {
       if (!process.env.GROQ_API_KEY) {
+        console.error('❌ No GROQ_API_KEY found in environment!');
         return false;
       }
       
+      console.log('Testing Groq API with key:', process.env.GROQ_API_KEY.substring(0, 20) + '...');
+      
       const client = getGroqClient();
       await client.chat.completions.create({
-        messages: [{ role: "user", content: "ping" }],
+        messages: [{ role: "user", content: "hi" }],
         model: "llama-3.3-70b-versatile",
-        max_tokens: 5,
+        max_tokens: 10,
       });
       
       return true;
     } catch (error: any) {
       retries++;
       console.error(`Groq health check attempt ${retries}/${maxRetries} failed:`, error.message);
+      console.error('Error status:', error?.status);
+      console.error('Error details:', error?.error);
       
       if (retries < maxRetries) {
         // Exponential backoff
