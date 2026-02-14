@@ -17,10 +17,6 @@ const client = new Client({
   ],
 });
 
-// Track active requests for better concurrency handling
-const activeRequests = new Map<string, number>();
-const MAX_CONCURRENT_REQUESTS_PER_USER = 3;
-
 // Bot ready event
 client.once('ready', async () => {
   console.log('╔════════════════════════════════════════╗');
@@ -53,33 +49,9 @@ client.once('ready', async () => {
 
   console.log('✅ Bot initialization complete!');
   console.log('💡 Bot is now command-less - AI handles all requests intelligently');
+  console.log('💪 No user rate limits - Groq handles 14k requests/day!');
   console.log('════════════════════════════════════════\n');
 });
-
-// Helper function to manage concurrent requests
-async function handleConcurrentRequest(
-  userId: string,
-  handler: () => Promise<void>
-): Promise<void> {
-  const currentRequests = activeRequests.get(userId) || 0;
-
-  if (currentRequests >= MAX_CONCURRENT_REQUESTS_PER_USER) {
-    throw new Error('TOO_MANY_CONCURRENT');
-  }
-
-  activeRequests.set(userId, currentRequests + 1);
-
-  try {
-    await handler();
-  } finally {
-    const remaining = (activeRequests.get(userId) || 1) - 1;
-    if (remaining <= 0) {
-      activeRequests.delete(userId);
-    } else {
-      activeRequests.set(userId, remaining);
-    }
-  }
-}
 
 // Main message handler - all requests go through AI
 client.on('messageCreate', async (message: Message) => {
@@ -125,60 +97,39 @@ client.on('messageCreate', async (message: Message) => {
     return;
   }
 
-  // Handle concurrent requests per user
+  // Show typing indicator
+  if (message.channel.isSendable()) {
+    await message.channel.sendTyping();
+  }
+
   try {
-    await handleConcurrentRequest(message.author.id, async () => {
-      // Show typing indicator
-      if (message.channel.isSendable()) {
-        await message.channel.sendTyping();
-      }
+    // Get response from AI (queued internally)
+    const response = await askLLM(query, message.author.id);
 
-      try {
-        // Get response from AI
-        const response = await askLLM(query, message.author.id);
-
-        // Handle empty responses
-        if (!response || response.trim().length === 0) {
-          await message.reply(
-            `I couldn't process that question. Please try rephrasing or contact ${hackathonData.contact.email} for assistance.`
-          );
-          return;
-        }
-
-        // Split long responses if needed (Discord has 2000 char limit)
-        if (response.length > 1900) {
-          const chunks = response.match(/[\s\S]{1,1900}/g) || [];
-          for (const chunk of chunks) {
-            await message.reply(chunk);
-            // Add small delay between chunks to prevent rate limiting
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          }
-        } else {
-          await message.reply(response);
-        }
-      } catch (error: any) {
-        console.error('❌ Error processing query:', error);
-
-        // Handle specific error types
-        if (error.message === 'RATE_LIMITED') {
-          await message.reply(
-            '⏳ You\'re asking questions too quickly! Please wait a moment and try again.'
-          );
-        } else {
-          await message.reply(
-            `❌ Sorry, I encountered an error processing your question. Please try again or contact ${hackathonData.contact.email} for assistance!`
-          );
-        }
-      }
-    });
-  } catch (error: any) {
-    if (error.message === 'TOO_MANY_CONCURRENT') {
+    // Handle empty responses
+    if (!response || response.trim().length === 0) {
       await message.reply(
-        '⚠️ You have too many questions being processed at once. Please wait for your current questions to be answered before asking more.'
+        `I couldn't process that question. Please try rephrasing or contact ${hackathonData.contact.email} for assistance.`
       );
-    } else {
-      console.error('❌ Unexpected error in concurrent handler:', error);
+      return;
     }
+
+    // Split long responses if needed (Discord has 2000 char limit)
+    if (response.length > 1900) {
+      const chunks = response.match(/[\s\S]{1,1900}/g) || [];
+      for (const chunk of chunks) {
+        await message.reply(chunk);
+        // Add small delay between chunks to prevent rate limiting
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    } else {
+      await message.reply(response);
+    }
+  } catch (error: any) {
+    console.error('❌ Error processing query:', error);
+    await message.reply(
+      `❌ Sorry, I encountered an error processing your question. Please try again or contact ${hackathonData.contact.email} for assistance!`
+    );
   }
 });
 
@@ -194,21 +145,7 @@ process.on('unhandledRejection', (error) => {
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('\n🛑 Shutting down gracefully...');
-  
-  // Wait for active requests to complete (with timeout)
-  const shutdownTimeout = setTimeout(() => {
-    console.log('⚠️ Shutdown timeout reached, forcing exit...');
-    process.exit(0);
-  }, 10000); // 10 second timeout
-
-  // Check if any requests are still active
-  while (activeRequests.size > 0) {
-    console.log(`⏳ Waiting for ${activeRequests.size} active request(s) to complete...`);
-    await new Promise(resolve => setTimeout(resolve, 500));
-  }
-
-  clearTimeout(shutdownTimeout);
-  console.log('✅ All requests completed, exiting...');
+  console.log('✅ Bot shutting down...');
   await client.destroy();
   process.exit(0);
 });

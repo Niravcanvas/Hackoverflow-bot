@@ -13,79 +13,56 @@ function getGroqClient(): Groq {
   return groq;
 }
 
-// Enhanced rate limiting with per-user tracking
-interface UserRateLimit {
-  timestamps: number[];
-  blockedUntil?: number;
+// Request queue for better concurrency handling
+interface QueuedRequest {
+  resolve: (value: string) => void;
+  reject: (error: Error) => void;
+  userQuery: string;
+  userId?: string;
 }
 
-const userRateLimits = new Map<string, UserRateLimit>();
-const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 10; // 10 requests per minute per user
-const COOLDOWN_BETWEEN_REQUESTS_MS = 3000; // 3 seconds between requests
+const requestQueue: QueuedRequest[] = [];
+let isProcessing = false;
+const MAX_CONCURRENT_GROQ_REQUESTS = 50; // Process up to 50 requests concurrently
+let activeGroqRequests = 0;
 
-function checkRateLimit(userId: string): { allowed: boolean; waitTime?: number } {
-  const now = Date.now();
-  const userLimit = userRateLimits.get(userId) || { timestamps: [] };
+// Statistics tracking
+let totalRequests = 0;
+let successfulRequests = 0;
+let failedRequests = 0;
 
-  // Check if user is temporarily blocked
-  if (userLimit.blockedUntil && now < userLimit.blockedUntil) {
-    const waitTime = Math.ceil((userLimit.blockedUntil - now) / 1000);
-    return { allowed: false, waitTime };
-  }
+async function processQueue() {
+  if (isProcessing || requestQueue.length === 0) return;
+  
+  isProcessing = true;
 
-  // Remove timestamps outside the window
-  userLimit.timestamps = userLimit.timestamps.filter(
-    (ts) => now - ts < RATE_LIMIT_WINDOW_MS
-  );
+  while (requestQueue.length > 0 && activeGroqRequests < MAX_CONCURRENT_GROQ_REQUESTS) {
+    const request = requestQueue.shift();
+    if (!request) break;
 
-  // Check if user exceeded rate limit
-  if (userLimit.timestamps.length >= MAX_REQUESTS_PER_WINDOW) {
-    const oldestTimestamp = Math.min(...userLimit.timestamps);
-    const waitTime = Math.ceil((RATE_LIMIT_WINDOW_MS - (now - oldestTimestamp)) / 1000);
-    userLimit.blockedUntil = now + (waitTime * 1000);
-    userRateLimits.set(userId, userLimit);
-    return { allowed: false, waitTime };
-  }
-
-  // Check cooldown between requests
-  if (userLimit.timestamps.length > 0) {
-    const lastRequest = Math.max(...userLimit.timestamps);
-    if (now - lastRequest < COOLDOWN_BETWEEN_REQUESTS_MS) {
-      const waitTime = Math.ceil((COOLDOWN_BETWEEN_REQUESTS_MS - (now - lastRequest)) / 1000);
-      return { allowed: false, waitTime };
-    }
-  }
-
-  // Allow request and record timestamp
-  userLimit.timestamps.push(now);
-  userRateLimits.set(userId, userLimit);
-
-  // Cleanup old entries (prevent memory leak)
-  if (userRateLimits.size > 5000) {
-    const entries = Array.from(userRateLimits.entries());
-    const expiredUsers = entries
-      .filter(([_, limit]) => {
-        const latestTimestamp = Math.max(...limit.timestamps, 0);
-        return now - latestTimestamp > RATE_LIMIT_WINDOW_MS * 2;
+    activeGroqRequests++;
+    
+    // Process request without blocking the queue
+    processGroqRequest(request.userQuery, request.userId)
+      .then(response => {
+        request.resolve(response);
+        successfulRequests++;
       })
-      .map(([userId]) => userId);
-    
-    expiredUsers.forEach((userId) => userRateLimits.delete(userId));
+      .catch(error => {
+        request.reject(error);
+        failedRequests++;
+      })
+      .finally(() => {
+        activeGroqRequests--;
+        processQueue(); // Continue processing queue
+      });
   }
 
-  return { allowed: true };
+  isProcessing = false;
 }
 
-export async function askLLM(userQuery: string, userId?: string): Promise<string> {
-  // Check rate limit per user
-  if (userId) {
-    const rateLimitCheck = checkRateLimit(userId);
-    
-    if (!rateLimitCheck.allowed) {
-      throw new Error('RATE_LIMITED');
-    }
-  }
+async function processGroqRequest(userQuery: string, userId?: string): Promise<string> {
+  totalRequests++;
 
   try {
     const systemPrompt = `You are Kernel, the official AI assistant for HackOverflow 4.0, a national-level hackathon at PHCET. You help participants with any questions about the event in a friendly, professional, and intelligent manner.
@@ -176,7 +153,8 @@ Remember: Be smart, be helpful, be human!`;
     
     // Handle specific Groq API errors
     if (error?.status === 429) {
-      return 'The AI service is experiencing high traffic. Please wait a moment and try again. ⏳';
+      // Groq rate limit hit - this is the only rate limit we respect
+      return 'The AI service is experiencing high traffic right now. Please try again in a moment. ⏳';
     }
     
     if (error?.status === 401) {
@@ -191,6 +169,21 @@ Remember: Be smart, be helpful, be human!`;
     // Generic error
     throw error;
   }
+}
+
+// Main function - adds request to queue
+export async function askLLM(userQuery: string, userId?: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    requestQueue.push({
+      resolve,
+      reject,
+      userQuery,
+      userId,
+    });
+    
+    // Start processing queue
+    processQueue();
+  });
 }
 
 // Health check function with retry logic
@@ -226,13 +219,23 @@ export async function checkGroqHealth(): Promise<boolean> {
   return false;
 }
 
-// Export rate limit stats for monitoring
-export function getRateLimitStats() {
+// Export statistics for monitoring
+export function getQueueStats() {
   return {
-    totalUsers: userRateLimits.size,
-    activeUsers: Array.from(userRateLimits.entries()).filter(([_, limit]) => {
-      const now = Date.now();
-      return limit.timestamps.some(ts => now - ts < RATE_LIMIT_WINDOW_MS);
-    }).length,
+    queueLength: requestQueue.length,
+    activeRequests: activeGroqRequests,
+    maxConcurrent: MAX_CONCURRENT_GROQ_REQUESTS,
+    totalRequests,
+    successfulRequests,
+    failedRequests,
+    successRate: totalRequests > 0 ? ((successfulRequests / totalRequests) * 100).toFixed(2) + '%' : '0%',
   };
 }
+
+// Log stats periodically for monitoring
+setInterval(() => {
+  const stats = getQueueStats();
+  if (stats.queueLength > 0 || stats.activeRequests > 0) {
+    console.log('📊 Queue Stats:', JSON.stringify(stats, null, 2));
+  }
+}, 30000); // Log every 30 seconds if there's activity
