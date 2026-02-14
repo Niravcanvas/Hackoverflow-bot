@@ -1,5 +1,5 @@
 import Groq from "groq-sdk";
-import hackathonData from '../config/hackathon-data.json';
+import { selectRelevantContext, formatContextForPrompt, getMinimalSystemPrompt } from './context-selector';
 
 // Lazy initialization - create client when first needed
 let groq: Groq | null = null;
@@ -23,7 +23,7 @@ interface QueuedRequest {
 
 const requestQueue: QueuedRequest[] = [];
 let isProcessing = false;
-const MAX_CONCURRENT_GROQ_REQUESTS = 8; // Reduced to stay within 6K tokens/min limit
+const MAX_CONCURRENT_GROQ_REQUESTS = 12; // Increased - smart context uses fewer tokens!
 let activeGroqRequests = 0;
 
 // Statistics tracking
@@ -65,68 +65,16 @@ async function processGroqRequest(userQuery: string, userId?: string): Promise<s
   totalRequests++;
 
   try {
-    // Extract only essential data instead of dumping entire JSON
-    const essentialData = {
-      name: hackathonData.name,
-      dates: hackathonData.dates,
-      location: hackathonData.location,
-      prizes: hackathonData.prizes,
-      registration: hackathonData.registration,
-      schedule: hackathonData.schedule,
-      contact: hackathonData.contact,
-      facilities: hackathonData.facilities,
-      statistics: hackathonData.statistics,
-      faqs: hackathonData.faqs,
-    };
+    // 🎯 SMART CONTEXT SELECTION - Only include relevant data!
+    const contextData = selectRelevantContext(userQuery);
+    const contextString = formatContextForPrompt(contextData);
+    const basePrompt = getMinimalSystemPrompt();
 
-    const systemPrompt = `You are Kernel, the official AI assistant for HackOverflow 4.0, a national-level hackathon at PHCET.
+    // Combine minimal prompt with only relevant context
+    const systemPrompt = `${basePrompt}\n\n${contextString}`;
 
-KEY EVENT INFO:
-- Event: ${hackathonData.name} - ${hackathonData.tagline}
-- Dates: ${hackathonData.dates.event_start} to ${hackathonData.dates.event_end} (36 hours)
-- Location: ${hackathonData.location.venue}, ${hackathonData.location.address}
-- Prize Pool: ${hackathonData.statistics.prize_pool}
-- Expected Participants: ${hackathonData.statistics.expected_hackers}
-
-REGISTRATION:
-- Deadline: ${hackathonData.dates.registration_end}
-- Fee: ${hackathonData.registration.fee_per_member} per member
-- Team Size: ${hackathonData.registration.team_size.min}-${hackathonData.registration.team_size.max} members
-- Contact: ${hackathonData.contact.email}
-
-FACILITIES:
-- Free accommodation on campus
-- 3 meals/day (Breakfast, Lunch, Dinner)
-- Bus transport from Pillai College of Engineering, Panvel
-
-COMPLETE DATA (for reference):
-${JSON.stringify(essentialData, null, 2)}
-
-RESPONSE STYLE:
-- Be direct and concise (1-3 sentences for simple questions)
-- Use bullet points only for schedules, lists, or multiple items
-- Professional but friendly tone
-- Use 1-2 emojis max
-- If info is missing, provide contact email
-
-EXAMPLES:
-Q: "when is the hackathon?"
-A: "HackOverflow 4.0 is from March 11-13, 2026 - a 36-hour coding marathon at PHCET Campus, Rasayani! 🚀"
-
-Q: "how do I register?"
-A: "Register before January 31, 2026 on the official website. Fee is Rs 500 per member, team size 3-4 members. Submit your project idea during registration!"
-
-Q: "what's the schedule for day 2?"
-A: "Day 2 (March 12) Schedule:
-• 8:00 AM - Breakfast
-• 9:00 AM - Coding continues
-• 11:00 AM - Evaluation Round 1
-• 1:00 PM - Lunch
-• 5:00 PM - Evaluation Round 2
-• 8:00 PM - Dinner
-• 10:00 PM - Jamming Session"
-
-Be helpful, accurate, and concise!`;
+    // Log for debugging
+    console.log(`📊 Context selected: ${contextData.detectedTopics.join(', ')}`);
 
     const client = getGroqClient();
     const chatCompletion = await client.chat.completions.create({
@@ -140,9 +88,9 @@ Be helpful, accurate, and concise!`;
           content: userQuery,
         },
       ],
-      model: "llama-3.1-8b-instant", // Fast model: 14,400 requests/day!
+      model: "llama-3.1-8b-instant",
       temperature: 0.6,
-      max_tokens: 500, // Reduced to stay within 6K token/min limit
+      max_tokens: 600, // Increased since we have smaller prompts now
       top_p: 0.9,
     });
 

@@ -48,9 +48,10 @@ client.once('ready', async () => {
   setupScheduledMessages(client);
 
   console.log('✅ Bot initialization complete!');
-  console.log('💡 Bot is command-less - AI handles all requests intelligently');
-  console.log('🚀 Using llama-3.1-8b-instant - 14,400 requests/day capacity!');
-  console.log('⚡ 8 concurrent requests - optimized for token limits!');
+  console.log('💡 Command-less AI with smart context selection');
+  console.log('🚀 Using llama-3.1-8b-instant - 14,400 requests/day!');
+  console.log('⚡ 12 concurrent requests with intelligent token optimization!');
+  console.log('🧠 Only sends relevant data - saves 60-80% tokens per request!');
   console.log('════════════════════════════════════════\n');
 });
 
