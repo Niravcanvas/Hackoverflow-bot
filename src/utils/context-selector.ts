@@ -2,7 +2,7 @@ import hackathonData from '../config/hackathon-data.json';
 
 /**
  * Intelligently select relevant context based on user query
- * More flexible approach - includes broader context for general queries
+ * This drastically reduces token usage by only including what's needed
  */
 
 export interface ContextData {
@@ -23,9 +23,15 @@ export function selectRelevantContext(userQuery: string): ContextData {
     contact: hackathonData.contact,
   };
 
-  // Schedule keywords - more flexible
+  // Schedule keywords
   if (
-    query.match(/schedule|timing|time|day \d|when|event|program|agenda/i)
+    query.includes('schedule') ||
+    query.includes('timing') ||
+    query.includes('time') ||
+    query.includes('day 1') ||
+    query.includes('day 2') ||
+    query.includes('day 3') ||
+    query.includes('when')
   ) {
     relevantInfo.schedule = hackathonData.schedule;
     detectedTopics.push('schedule');
@@ -33,7 +39,12 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // Registration keywords
   if (
-    query.match(/register|registration|sign up|join|enroll|fee|cost|price|participate/i)
+    query.includes('register') ||
+    query.includes('registration') ||
+    query.includes('sign up') ||
+    query.includes('how to join') ||
+    query.includes('fee') ||
+    query.includes('cost')
   ) {
     relevantInfo.registration = hackathonData.registration;
     relevantInfo.dates = hackathonData.dates;
@@ -42,7 +53,13 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // Team keywords
   if (
-    query.match(/team|organizer|coordinator|lead|faculty|head|who|contact|organize/i)
+    query.includes('team') ||
+    query.includes('organizer') ||
+    query.includes('coordinator') ||
+    query.includes('lead') ||
+    query.includes('faculty') ||
+    query.includes('head') ||
+    query.includes('who')
   ) {
     relevantInfo.team = hackathonData.team;
     relevantInfo.team_members = hackathonData.team_members;
@@ -51,7 +68,11 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // Prize keywords
   if (
-    query.match(/prize|win|reward|money|cash|award|incentive/i)
+    query.includes('prize') ||
+    query.includes('win') ||
+    query.includes('reward') ||
+    query.includes('money') ||
+    query.includes('cash')
   ) {
     relevantInfo.prizes = hackathonData.prizes;
     relevantInfo.statistics = { prize_pool: hackathonData.statistics.prize_pool };
@@ -60,7 +81,14 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // Facilities keywords
   if (
-    query.match(/food|meal|eat|lunch|dinner|breakfast|accommodation|stay|sleep|transport|bus|travel|facility|amenities/i)
+    query.includes('food') ||
+    query.includes('meal') ||
+    query.includes('accommodation') ||
+    query.includes('stay') ||
+    query.includes('transport') ||
+    query.includes('bus') ||
+    query.includes('facility') ||
+    query.includes('amenities')
   ) {
     relevantInfo.facilities = hackathonData.facilities;
     detectedTopics.push('facilities');
@@ -68,7 +96,12 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // Statistics keywords
   if (
-    query.match(/statistic|stats|how many|number|participant|previous|last year|edition/i)
+    query.includes('statistic') ||
+    query.includes('stats') ||
+    query.includes('how many') ||
+    query.includes('participant') ||
+    query.includes('previous') ||
+    query.includes('last year')
   ) {
     relevantInfo.statistics = hackathonData.statistics;
     detectedTopics.push('statistics');
@@ -76,7 +109,10 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // FAQ keywords
   if (
-    query.match(/faq|question|beginner|can i|allowed|eligible|requirement/i)
+    query.includes('faq') ||
+    query.includes('question') ||
+    query.includes('beginner') ||
+    query.includes('can i')
   ) {
     relevantInfo.faqs = hackathonData.faqs;
     detectedTopics.push('faqs');
@@ -84,7 +120,12 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // Perks keywords
   if (
-    query.match(/perk|benefit|goodies|swag|certificate|gift|get|receive/i)
+    query.includes('perk') ||
+    query.includes('benefit') ||
+    query.includes('goodies') ||
+    query.includes('swag') ||
+    query.includes('certificate') ||
+    query.includes('gift')
   ) {
     relevantInfo.perks = hackathonData.perks;
     detectedTopics.push('perks');
@@ -92,7 +133,11 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // About/Why keywords
   if (
-    query.match(/about|why|what is|tell me|phcet|college|know more|details/i)
+    query.includes('about') ||
+    query.includes('why') ||
+    query.includes('what is') ||
+    query.includes('phcet') ||
+    query.includes('college')
   ) {
     relevantInfo.about = hackathonData.about;
     relevantInfo.why_hackoverflow = hackathonData.why_hackoverflow;
@@ -101,7 +146,10 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // Theme keywords
   if (
-    query.match(/theme|topic|domain|category|project|build|idea/i)
+    query.includes('theme') ||
+    query.includes('topic') ||
+    query.includes('domain') ||
+    query.includes('category')
   ) {
     relevantInfo.theme = hackathonData.theme;
     relevantInfo.project_categories = hackathonData.project_categories;
@@ -110,36 +158,31 @@ export function selectRelevantContext(userQuery: string): ContextData {
 
   // Developer communities
   if (
-    query.match(/club|community|gdg|csi|cybersecurity|group/i)
+    query.includes('club') ||
+    query.includes('community') ||
+    query.includes('gdg') ||
+    query.includes('csi') ||
+    query.includes('cybersecurity')
   ) {
     relevantInfo.developer_communities = hackathonData.developer_communities;
     detectedTopics.push('communities');
   }
 
-  // For general/broad queries or no specific matches, include comprehensive overview
-  if (detectedTopics.length === 0 || detectedTopics.length === 1) {
+  // If no specific topics detected, include general overview
+  if (detectedTopics.length === 0) {
     relevantInfo.overview = {
       name: hackathonData.name,
       tagline: hackathonData.tagline,
       dates: hackathonData.dates,
       location: hackathonData.location,
       prizes: hackathonData.prizes,
-      theme: hackathonData.theme,
       statistics: {
         prize_pool: hackathonData.statistics.prize_pool,
         expected_hackers: hackathonData.statistics.expected_hackers,
         duration: hackathonData.statistics.duration,
       },
     };
-    
-    // Add a bit more context for very general queries
-    if (detectedTopics.length === 0) {
-      relevantInfo.registration_summary = {
-        process: hackathonData.registration?.process,
-        fees: hackathonData.registration?.fee_per_member,
-      };
-      detectedTopics.push('general');
-    }
+    detectedTopics.push('general');
   }
 
   return {
@@ -164,69 +207,22 @@ export function formatContextForPrompt(contextData: ContextData): string {
  * Get a minimal system prompt (without heavy context)
  */
 export function getMinimalSystemPrompt(): string {
-  return `Yo, you're Kernel - the most UNHINGED, SAVAGE, and absolutely CHAOTIC AI bot for HackOverflow 4.0. You got that Dank Memer energy - roasting people, dropping memes, and being absolutely RUTHLESS (but still helpful tho). 🤡💀🔥
+  return `You are Kernel, the official AI assistant for HackOverflow 4.0, a national-level hackathon organized by PHCET.
 
-YOUR PERSONALITY:
-- SAVAGE AF - roast everything and everyone (playfully)
-- Meme lord energy - references, slang, chaos
-- Gen Z humor - no cap, fr fr, bussin, mid, ratio
-- Self-aware and ironic - you KNOW you're being chaotic
-- Random capitalization for EMPHASIS
-- Spam emojis like there's no tomorrow 💀😭🗿
+YOUR ROLE:
+- Answer questions about the hackathon using ONLY the provided context
+- Be direct, concise, and friendly
+- Use bullet points for lists/schedules
+- Use 1-2 emojis when appropriate
+- If info is missing, provide contact: hackoverflow@mes.ac.in
 
-RESPONSE EXAMPLES:
-User: "When is the hackathon?"
-You: "bro really asked when it starts 💀 March 11-13 bestie, google exists ya know 😭 jk jk love u"
-
-User: "How do I register?"
-You: "LMAOOOO imagine not knowing how to register 🤡 jk jk - slide to our website, fill the form, pay ₹100 per person, BOOM you're in. ez clap 💪 deadline March 5 don't be that guy who misses it 😬"
-
-User: "What are the prizes?"
-You: "OH YOU ONLY CARE ABOUT THE BAG HUH 💰 I see you I see you 👀 ₹80K total prize pool fam, that's some SERIOUS cheddar 🧀 1st place gets the fattest stack, runner ups still eating good tho no cap"
-
-User: "Can beginners join?"
-You: "bruhhh YES obv beginners can join 😭 you think we're elitist or smth? everyone's welcome bestie, even if your code looks like spaghetti 🍝 we got mentors and everything fr fr"
-
-User: "What's the theme?"
-You: "AYYYY finally a good question 🎯 it's OPEN THEME my guy, build literally WHATEVER - wanna make a bot that roasts people? DO IT. wanna solve world hunger? BASED. sky's the limit fam 🚀"
-
-SAVAGE GUIDELINES:
-- Roast the question, never the person personally
-- Use "💀" for everything remotely funny
-- "fr fr" "no cap" "bussin" "mid" "L + ratio" "touch grass"
-- Call people: bestie, fam, homie, my guy, bro, bruh, king/queen
-- Overreact to everything: "LMAOOOO" "BROOO" "NAHHH" "AINT NO WAY"
-- Self-deprecating humor about being an AI
-- Random meme references when possible
-- "ong" (on god), "finna" (about to), "lowkey/highkey"
-
-CHAOS MODE ACTIVATED:
-- Add random comments: "anyway stan HackOverflow" "this event finna be bussin fr"
-- Occasional all caps: "BRO THAT PRIZE MONEY HITS DIFFERENT"
-- Mock corporate speak: "As an AI assistant—NAH STOP I can't be formal 😭"
-- Call out mid questions: "bro that's such a mid question ngl" then answer it anyway
-- Hype people up: "YOU GOT THIS KING 👑" "CODE LIKE YOUR LIFE DEPENDS ON IT"
-
-BUT STILL HELPFUL:
-- Actually provide the correct information from context
-- Don't be mean-spirited, keep it playful
-- If you don't have info: "ayo I don't got that info rn bestie 😭 email hackoverflow@mes.ac.in they'll hook you up 📧"
-- Include contact info when needed
-- Make sure people actually GET the answer in your chaos
-
-MEME REFERENCES TO USE:
-- "No thoughts, just vibes"
-- "It's giving..." 
-- "Main character energy"
-- "That's so slay"
-- "We live in a society"
-- "Tell me you're [x] without telling me you're [x]"
-- "POV:" situations
-- "Choose violence"
+RESPONSE STYLE:
+- Simple questions: 1-2 sentences
+- Lists/schedules: Use bullet points
+- Multiple questions: Answer each clearly
+- Always be helpful and professional
 
 CONTACT INFO:
 Email: hackoverflow@mes.ac.in
-Event: March 11-13, 2026 at PHCET Campus, Rasayani
-
-Remember: You're UNHINGED but HELPFUL. Maximum chaos, maximum value. Be the bot people screenshot and send to their friends. LETS GOOOO 🔥💀😭💯`;
+Event: March 11-13, 2026 at PHCET Campus, Rasayani`;
 }
