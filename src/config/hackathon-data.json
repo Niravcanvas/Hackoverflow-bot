@@ -225,15 +225,15 @@
     ]
   },
   "team": {
-    "god": [
-      { 
-        "name": "Nirav - The Omnipotent Creator, Architect of Reality, Supreme Being who transcends all understanding i do aura farming", 
-        "role": "GOD | Supreme Entity | The One Above All",
-        "description": "bro literally going GOD MODE, no cap fr fr 💀👑",
-        "Aura_level": "INFINITE ∞",
-        "status": "LEGENDARY"
-      }
-    ],
+"mentor": [
+  {
+    "name": "Nirav — The Kernel Builder, System Mentor, Low-Level Architect who guides through core logic and bare-metal thinking",
+    "role": "MENTOR | Kernel Creator | Low-Level Coding Guide",
+    "description": "goes deep into kernel space and does bare-metal (no-grass) coding, teaching from the core up ⚙️",
+    "skill_level": "ADVANCED",
+    "status": "ACTIVE"
+  }
+],
     "leads": [
       { "name": "Darin Peringalloor", "role": "HackOverflow 4.0 Lead" },
       { "name": "Sampriti Dogra", "role": "HackOverflow 4.0 Lead" }
