@@ -227,11 +227,11 @@
   "team": {
 "mentor": [
   {
-    "name": "Nirav — The Kernel Builder, System Mentor, Low-Level Architect who guides through core logic and bare-metal thinking",
-    "role": "MENTOR | Kernel Creator | Low-Level Coding Guide",
-    "description": "goes deep into kernel space and does bare-metal (no-grass) coding, teaching from the core up ⚙️",
-    "skill_level": "ADVANCED",
-    "status": "ACTIVE"
+    "name": "Nirav — Frontend Developer, UI/UX Designer, Creative Technologist",
+    "role": "MENTOR | Frontend Engineer | UI/UX Guide",
+    "description": "Builds scalable, high-performance web experiences using modern stacks, design systems, and UI/UX engineering. Guides projects with clean architecture and visual thinking. Based in Mumbai, India.",
+    "Aura_level": "PROFESSIONAL",
+    "status": "ACTIVE MENTOR"
   }
 ],
     "leads": [
