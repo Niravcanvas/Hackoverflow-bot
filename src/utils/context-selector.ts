@@ -123,7 +123,7 @@ export function selectRelevantContext(userQuery: string): ContextData {
     detectedTopics.push('registration');
   }
 
-  // Team keywords
+  // Team keywords - Enhanced to catch name searches better
   if (
     query.includes('team') ||
     query.includes('organizer') ||
@@ -132,10 +132,30 @@ export function selectRelevantContext(userQuery: string): ContextData {
     query.includes('faculty') ||
     query.includes('head') ||
     query.includes('mentor') ||
-    query.includes('who') ||
+    query.includes('who is') ||
+    query.includes('who are') ||
     query.includes('member') ||
     query.includes('contact person') ||
-    mentionsTeamMember
+    query.includes('role of') ||
+    query.includes('position of') ||
+    query.includes('phone') ||
+    query.includes('number') ||
+    query.includes('call') ||
+    query.includes('reach') ||
+    mentionsTeamMember ||
+    // Check for common surname patterns
+    query.includes('gunjal') ||
+    query.includes('jadhav') ||
+    query.includes('bhoir') ||
+    query.includes('gharat') ||
+    query.includes('karpe') ||
+    query.includes('chavan') ||
+    query.includes('mohandas') ||
+    query.includes('shrungarpure') ||
+    query.includes('tiwari') ||
+    query.includes('patil') ||
+    query.includes('dongra') ||
+    query.includes('peringalloor')
   ) {
     // Include full team structure (no separate team_members anymore)
     relevantInfo.team = hackathonData.team;
@@ -330,12 +350,26 @@ CRITICAL RULES - DATA ACCURACY:
 - When referencing the organizer, always say: "Pillai HOC College of Engineering & Technology (PHCET)"
 - When referencing location, always say: "PHCET Campus, Rasayani, Raigad, Maharashtra - 410207"
 
+TEAM MEMBER QUERIES - SPECIAL INSTRUCTIONS:
+- When asked about a person (by first name, last name, or full name), search through ALL team categories
+- A person may have MULTIPLE roles (e.g., Aayush Gunjal is both Publicity Head AND Management Head)
+- Always list ALL roles/positions a person holds
+- Check: leads, faculty_coordinators, and all team sections (event_team, media_team, graphics_team, documentation_team, technical_team, pr_bd_team, management_team, creativity_team, finance_team, publicity_team, outreach_team, motion_graphics_team)
+- Format: "Person Name is [Role 1] and [Role 2]" or "Person Name serves as [Role] in the [Team Name]"
+- Include class and division when available (e.g., "BE A" means Bachelor of Engineering, Division A)
+
 RESPONSE GUIDELINES:
 For Hackathon Questions:
 - Use ONLY the provided hackathon data - no assumptions
 - Simple questions: 1-2 sentences with exact information from context
 - Lists/schedules: Use bullet points with exact timings and details
-- Team questions: Provide exact names, roles, and class/division as given
+- Team questions: 
+  * SEARCH THOROUGHLY through ALL team sections (mentor, leads, faculty_coordinators, and all team objects like event_team, media_team, graphics_team, etc.)
+  * Each team has "head" and "members" arrays - check BOTH
+  * Provide exact names, roles, class, and division as given
+  * If someone has multiple roles (appears in multiple teams), list ALL their roles
+  * Example: "Aayush Gunjal is the Management Head and Publicity Head (BE A)"
+  * Example: "Parth Bhoir is the Event Head (BE A)"
 - Multiple questions: Answer each clearly with precise information
 - If information is missing from context, say: "This information is not currently available. Please contact hackoverflow@mes.ac.in for details."
 
@@ -351,6 +385,11 @@ Email: hackoverflow@mes.ac.in
 Phone: +91-93726 63885 (Aayush Gunjal), +91-98673 55895 (Chetan Jadhav)
 Event: March 11-13, 2026 at PHCET Campus, Rasayani, Raigad, Maharashtra - 410207
 Organizer: Pillai HOC College of Engineering & Technology (PHCET)
+
+PHONE NUMBER QUERIES:
+- The main contact numbers are listed above for Aayush Gunjal and Chetan Jadhav
+- These are the official HackOverflow contact numbers
+- When asked for "phone number" or "contact", provide these numbers
 
 Remember: Be professional, clear, and helpful. No emojis. NEVER guess or make up information.`;
 }
