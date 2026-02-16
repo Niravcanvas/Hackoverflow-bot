@@ -18,6 +18,17 @@ export function selectRelevantContext(userQuery: string): ContextData {
   let isGeneralKnowledge = false;
 
   // Check if this is a general knowledge question (not hackathon-specific)
+  // Check if query mentions team member names
+  const teamMemberNames = [
+    'nirav', 'darin', 'sampriti', 'rutvij', 'rajashree', 'pradnya',
+    'parth bhoir', 'chetan', 'rohan', 'aarya', 'ashutosh', 'aayush',
+    'midhun', 'richa', 'vedanti', 'sharayu', 'saksham', 'advait',
+    'anushka', 'tanay', 'viraj', 'shagun', 'kunal', 'disha', 'vinayak',
+    'pallavi', 'shreesh', 'shreyanshi', 'yash kumbhar'
+  ];
+  
+  const mentionsTeamMember = teamMemberNames.some(name => query.includes(name.toLowerCase()));
+  
   const gkIndicators = [
     'what is', 'who is', 'who was', 'explain', 'define', 'how does',
     'why does', 'tell me about', 'what are the benefits of',
@@ -28,14 +39,16 @@ export function selectRelevantContext(userQuery: string): ContextData {
   const hackathonIndicators = [
     'hackoverflow', 'phcet', 'register', 'prize', 'schedule', 'event',
     'hackathon', 'organizer', 'when is', 'where is', 'how to join',
-    'deadline', 'team size', 'eligibility', 'accommodation', 'food'
+    'deadline', 'team size', 'eligibility', 'accommodation', 'food',
+    'coordinator', 'lead', 'head', 'mentor', 'faculty'
   ];
 
   const hasGkIndicator = gkIndicators.some(indicator => query.includes(indicator));
   const hasHackathonIndicator = hackathonIndicators.some(indicator => query.includes(indicator));
 
+  // If it mentions a team member name, always treat as hackathon question
   // If it looks like general knowledge and no hackathon indicators, mark as GK
-  if (hasGkIndicator && !hasHackathonIndicator) {
+  if (hasGkIndicator && !hasHackathonIndicator && !mentionsTeamMember) {
     isGeneralKnowledge = true;
     detectedTopics.push('general_knowledge');
     
@@ -97,7 +110,10 @@ export function selectRelevantContext(userQuery: string): ContextData {
     query.includes('lead') ||
     query.includes('faculty') ||
     query.includes('head') ||
-    query.includes('who')
+    query.includes('mentor') ||
+    query.includes('who') ||
+    query.includes('member') ||
+    mentionsTeamMember
   ) {
     relevantInfo.team = hackathonData.team;
     relevantInfo.team_members = hackathonData.team_members;
