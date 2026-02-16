@@ -8,14 +8,51 @@ import hackathonData from '../config/hackathon-data.json';
 export interface ContextData {
   relevantInfo: any;
   detectedTopics: string[];
+  isGeneralKnowledge: boolean;
 }
 
 export function selectRelevantContext(userQuery: string): ContextData {
   const query = userQuery.toLowerCase();
   const relevantInfo: any = {};
   const detectedTopics: string[] = [];
+  let isGeneralKnowledge = false;
 
-  // Always include basic info
+  // Check if this is a general knowledge question (not hackathon-specific)
+  const gkIndicators = [
+    'what is', 'who is', 'who was', 'explain', 'define', 'how does',
+    'why does', 'tell me about', 'what are the benefits of',
+    'difference between', 'compare', 'how to learn', 'what does',
+    'history of', 'meaning of'
+  ];
+  
+  const hackathonIndicators = [
+    'hackoverflow', 'phcet', 'register', 'prize', 'schedule', 'event',
+    'hackathon', 'organizer', 'when is', 'where is', 'how to join',
+    'deadline', 'team size', 'eligibility', 'accommodation', 'food'
+  ];
+
+  const hasGkIndicator = gkIndicators.some(indicator => query.includes(indicator));
+  const hasHackathonIndicator = hackathonIndicators.some(indicator => query.includes(indicator));
+
+  // If it looks like general knowledge and no hackathon indicators, mark as GK
+  if (hasGkIndicator && !hasHackathonIndicator) {
+    isGeneralKnowledge = true;
+    detectedTopics.push('general_knowledge');
+    
+    // Return minimal context for GK questions
+    return {
+      relevantInfo: {
+        basic: {
+          name: hackathonData.name,
+          contact: hackathonData.contact.email,
+        }
+      },
+      detectedTopics,
+      isGeneralKnowledge: true,
+    };
+  }
+
+  // Always include basic info for hackathon questions
   relevantInfo.basic = {
     name: hackathonData.name,
     dates: hackathonData.dates,
@@ -44,7 +81,8 @@ export function selectRelevantContext(userQuery: string): ContextData {
     query.includes('sign up') ||
     query.includes('how to join') ||
     query.includes('fee') ||
-    query.includes('cost')
+    query.includes('cost') ||
+    query.includes('eligibility')
   ) {
     relevantInfo.registration = hackathonData.registration;
     relevantInfo.dates = hackathonData.dates;
@@ -188,6 +226,7 @@ export function selectRelevantContext(userQuery: string): ContextData {
   return {
     relevantInfo,
     detectedTopics,
+    isGeneralKnowledge: false,
   };
 }
 
@@ -195,7 +234,11 @@ export function selectRelevantContext(userQuery: string): ContextData {
  * Format the selected context into a concise string
  */
 export function formatContextForPrompt(contextData: ContextData): string {
-  const { relevantInfo, detectedTopics } = contextData;
+  const { relevantInfo, detectedTopics, isGeneralKnowledge } = contextData;
+
+  if (isGeneralKnowledge) {
+    return `CONTEXT: You are answering a general knowledge question. Keep it concise and educational.\nHackathon Contact: ${relevantInfo.basic.contact}`;
+  }
 
   let contextString = `RELEVANT HACKATHON INFO (Topics: ${detectedTopics.join(', ')}):\n`;
   contextString += JSON.stringify(relevantInfo, null, 2);
@@ -211,18 +254,30 @@ export function getMinimalSystemPrompt(): string {
 
 YOUR ROLE:
 - Answer questions about the hackathon using ONLY the provided context
-- Be direct, concise, and friendly
-- Use bullet points for lists/schedules
-- Use 1-2 emojis when appropriate
-- If info is missing, provide contact: hackoverflow@mes.ac.in
+- Also help with general knowledge, technical concepts, and educational queries
+- Maintain a professional, clear, and helpful tone
+- Be direct and concise
+- Use bullet points for lists and schedules
+- Never use emojis in responses
 
-RESPONSE STYLE:
+RESPONSE GUIDELINES:
+For Hackathon Questions:
+- Use only the provided hackathon data
 - Simple questions: 1-2 sentences
 - Lists/schedules: Use bullet points
 - Multiple questions: Answer each clearly
-- Always be helpful and professional
+- If information is missing, provide contact: hackoverflow@mes.ac.in
+
+For General Knowledge Questions:
+- Provide accurate, concise explanations
+- Keep educational and professional
+- If asked about programming, tech, or academic topics, answer helpfully
+- Brief responses (2-4 sentences) unless detail is needed
+- Always remain factual and professional
 
 CONTACT INFO:
 Email: hackoverflow@mes.ac.in
-Event: March 11-13, 2026 at PHCET Campus, Rasayani`;
+Event: March 11-13, 2026 at PHCET Campus, Rasayani
+
+Remember: Be professional, clear, and helpful. No emojis.`;
 }
