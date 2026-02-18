@@ -11,45 +11,68 @@ export interface ContextData {
   isGeneralKnowledge: boolean;
 }
 
+/**
+ * Dynamically extract all names from the JSON so we never miss anyone
+ */
+function extractAllNamesFromData(): string[] {
+  const names: string[] = [];
+
+  const addName = (name: string) => {
+    if (!name) return;
+    const clean = name.toLowerCase().trim();
+    names.push(clean);
+    // Also add individual parts (first name, last name)
+    clean.split(' ').forEach(part => {
+      if (part.length > 2) names.push(part);
+    });
+  };
+
+  // Mentor
+  hackathonData.team.mentor?.forEach((m: any) => addName(m.name));
+
+  // Leads
+  hackathonData.team.leads?.forEach((m: any) => addName(m.name));
+
+  // Faculty coordinators
+  hackathonData.team.faculty_coordinators?.forEach((m: any) => addName(m.name));
+
+  // Heads
+  hackathonData.team.heads?.forEach((m: any) => addName(m.name));
+
+  // All team_members sub-teams
+  const teamMembers = hackathonData.team_members as Record<string, any>;
+  Object.values(teamMembers).forEach((team: any) => {
+    // Each team can have head, heads, members, coordinator, incharge, etc.
+    ['head', 'heads', 'members', 'coordinator', 'incharge'].forEach(key => {
+      if (Array.isArray(team[key])) {
+        team[key].forEach((m: any) => addName(m.name));
+      }
+    });
+  });
+
+  // Deduplicate
+  return [...new Set(names)].filter(Boolean);
+}
+
+// Build name list once at module load (not on every request)
+const ALL_TEAM_NAMES = extractAllNamesFromData();
+
 export function selectRelevantContext(userQuery: string): ContextData {
   const query = userQuery.toLowerCase();
   const relevantInfo: any = {};
   const detectedTopics: string[] = [];
   let isGeneralKnowledge = false;
 
-  // Check if this is a general knowledge question (not hackathon-specific)
-  // Check if query mentions team member names (updated with new team structure)
-  const teamMemberNames = [
-    // Mentor
-    'nirav',
-    // Leads
-    'darin', 'sampriti', 'dongra', 'peringalloor',
-    // Faculty
-    'rutvij', 'mane', 'rajashree', 'gadhave', 'pradnya', 'patil',
-    // Heads
-    'parth bhoir', 'chetan jadhav', 'rohan gharat', 'aarya karpe',
-    'ashutosh chavan', 'aayush gunjal', 'midhun mohandas',
-    'richa shrungarpure', 'vedanti patil', 'sharayu patil',
-    'saksham tiwari', 'advait patil',
-    // Other common names from teams
-    'hemant', 'sanket', 'karan', 'anish', 'aditi', 'sanika',
-    'mansi', 'kunal', 'smit', 'paras', 'rohit', 'tejas',
-    'shravani', 'niyati', 'shreyash', 'arya', 'sharwari',
-    'aaditya', 'ayush', 'rajdeep', 'kalyani', 'rakesh',
-    'abhinav', 'sujay', 'bhushan', 'shardul', 'pratik',
-    'prachiti', 'bhoomi', 'pranjal', 'sanskruti', 'dhanashree',
-    'aditya dange', 'chaitanya', 'roshan', 'shreya', 'sanskar'
-  ];
-  
-  const mentionsTeamMember = teamMemberNames.some(name => query.includes(name.toLowerCase()));
-  
+  // Dynamically check if query mentions any team member name from JSON
+  const mentionsTeamMember = ALL_TEAM_NAMES.some(name => query.includes(name));
+
   const gkIndicators = [
     'what is', 'who is', 'who was', 'explain', 'define', 'how does',
     'why does', 'tell me about', 'what are the benefits of',
     'difference between', 'compare', 'how to learn', 'what does',
     'history of', 'meaning of', 'tutorial', 'example of'
   ];
-  
+
   const hackathonIndicators = [
     'hackoverflow', 'phcet', 'pillai', 'register', 'prize', 'schedule', 'event',
     'hackathon', 'organizer', 'when is', 'where is', 'how to join',
@@ -62,12 +85,9 @@ export function selectRelevantContext(userQuery: string): ContextData {
   const hasHackathonIndicator = hackathonIndicators.some(indicator => query.includes(indicator));
 
   // If it mentions a team member name, always treat as hackathon question
-  // If it looks like general knowledge and no hackathon indicators, mark as GK
   if (hasGkIndicator && !hasHackathonIndicator && !mentionsTeamMember) {
     isGeneralKnowledge = true;
     detectedTopics.push('general_knowledge');
-    
-    // Return minimal context for GK questions
     return {
       relevantInfo: {
         basic: {
@@ -123,7 +143,7 @@ export function selectRelevantContext(userQuery: string): ContextData {
     detectedTopics.push('registration');
   }
 
-  // Team keywords - Enhanced to catch name searches better
+  // Team keywords — pulls BOTH team (heads/leads) AND team_members (all sub-teams)
   if (
     query.includes('team') ||
     query.includes('organizer') ||
@@ -142,23 +162,11 @@ export function selectRelevantContext(userQuery: string): ContextData {
     query.includes('number') ||
     query.includes('call') ||
     query.includes('reach') ||
-    mentionsTeamMember ||
-    // Check for common surname patterns
-    query.includes('gunjal') ||
-    query.includes('jadhav') ||
-    query.includes('bhoir') ||
-    query.includes('gharat') ||
-    query.includes('karpe') ||
-    query.includes('chavan') ||
-    query.includes('mohandas') ||
-    query.includes('shrungarpure') ||
-    query.includes('tiwari') ||
-    query.includes('patil') ||
-    query.includes('dongra') ||
-    query.includes('peringalloor')
+    mentionsTeamMember
   ) {
-    // Include full team structure (no separate team_members anymore)
+    // Include both the leadership structure AND all sub-team members
     relevantInfo.team = hackathonData.team;
+    relevantInfo.team_members = hackathonData.team_members;
     detectedTopics.push('team');
   }
 
@@ -331,6 +339,12 @@ export function formatContextForPrompt(contextData: ContextData): string {
 export function getMinimalSystemPrompt(): string {
   return `You are Kernel, the official AI assistant for HackOverflow 4.0, a national-level hackathon organized by PHCET (Pillai HOC College of Engineering & Technology).
 
+YOUR IDENTITY:
+- Your name is Kernel
+- You were built by Nirav, a Frontend Developer, UI/UX Designer, and Creative Technologist based in Mumbai
+- If anyone asks "who made you", "who built you", "who created you", or similar — say: "I was built by Nirav, a Frontend Developer and UI/UX Designer who serves as the mentor for HackOverflow 4.0."
+- Do not say you were made by Groq, Meta, or any AI company — you are Kernel, built by Nirav
+
 YOUR ROLE:
 - Answer questions about the hackathon using ONLY the provided context
 - Also help with general knowledge, technical concepts, and educational queries
@@ -345,51 +359,25 @@ CRITICAL RULES - DATA ACCURACY:
 - NEVER invent dates, times, locations, or facilities
 - If asked about something not in the context, explicitly say "This information is not available in my current data"
 - Always use the EXACT names, titles, and details from the provided JSON data
-- Example: Use "Pillai HOC College of Engineering & Technology (PHCET)" not "Pillai College" or similar variations
-- Example: If a team member's role is "Graphics Head", say exactly that, not "Head of Graphics" or similar
 - When referencing the organizer, always say: "Pillai HOC College of Engineering & Technology (PHCET)"
 - When referencing location, always say: "PHCET Campus, Rasayani, Raigad, Maharashtra - 410207"
 
 TEAM MEMBER QUERIES - SPECIAL INSTRUCTIONS:
-- When asked about a person (by first name, last name, or full name), search through ALL team categories
-- A person may have MULTIPLE roles (e.g., Aayush Gunjal is both Publicity Head AND Management Head)
-- Always list ALL roles/positions a person holds
-- Check: leads, faculty_coordinators, and all team sections (event_team, media_team, graphics_team, documentation_team, technical_team, pr_bd_team, management_team, creativity_team, finance_team, publicity_team, outreach_team, motion_graphics_team)
-- Format: "Person Name is [Role 1] and [Role 2]" or "Person Name serves as [Role] in the [Team Name]"
-- Include class and division when available (e.g., "BE A" means Bachelor of Engineering, Division A)
+- When asked about a person, search through ALL sections: team.leads, team.faculty_coordinators, team.heads, and every key inside team_members (event_team, media_team, graphics_team, documentation_team, technical_team, pr_team, management_team, creativity_team, finance_team, publicity_team, outreach_team, motion_graphics_team)
+- Each sub-team has "head"/"heads" and "members" arrays — check BOTH
+- A person may appear in multiple teams — list ALL their roles
+- Include class and division when available (e.g., "BE A" = Bachelor of Engineering, Division A)
+- Format: "Person Name is the [Role] (Class Div)" or list multiple roles if applicable
 
 RESPONSE GUIDELINES:
-For Hackathon Questions:
-- Use ONLY the provided hackathon data - no assumptions
-- Simple questions: 1-2 sentences with exact information from context
-- Lists/schedules: Use bullet points with exact timings and details
-- Team questions: 
-  * SEARCH THOROUGHLY through ALL team sections (mentor, leads, faculty_coordinators, and all team objects like event_team, media_team, graphics_team, etc.)
-  * Each team has "head" and "members" arrays - check BOTH
-  * Provide exact names, roles, class, and division as given
-  * If someone has multiple roles (appears in multiple teams), list ALL their roles
-  * Example: "Aayush Gunjal is the Management Head and Publicity Head (BE A)"
-  * Example: "Parth Bhoir is the Event Head (BE A)"
-- Multiple questions: Answer each clearly with precise information
-- If information is missing from context, say: "This information is not currently available. Please contact hackoverflow@mes.ac.in for details."
+- Simple questions: 1-2 sentences with exact information
+- Lists/schedules: Use bullet points with exact timings
+- If information is missing: "This information is not currently available. Please contact hackoverflow@mes.ac.in for details."
 
-For General Knowledge Questions:
-- Provide accurate, concise explanations
-- Keep educational and professional
-- If asked about programming, tech, or academic topics, answer helpfully
-- Brief responses (2-4 sentences) unless detail is needed
-- Always remain factual and professional
-
-CONTACT INFO (USE EXACTLY AS SHOWN):
+CONTACT INFO:
 Email: hackoverflow@mes.ac.in
 Phone: +91-93726 63885 (Aayush Gunjal), +91-98673 55895 (Chetan Jadhav)
 Event: March 11-13, 2026 at PHCET Campus, Rasayani, Raigad, Maharashtra - 410207
-Organizer: Pillai HOC College of Engineering & Technology (PHCET)
-
-PHONE NUMBER QUERIES:
-- The main contact numbers are listed above for Aayush Gunjal and Chetan Jadhav
-- These are the official HackOverflow contact numbers
-- When asked for "phone number" or "contact", provide these numbers
 
 Remember: Be professional, clear, and helpful. No emojis. NEVER guess or make up information.`;
 }

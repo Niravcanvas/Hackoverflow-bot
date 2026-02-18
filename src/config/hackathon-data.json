@@ -74,26 +74,11 @@
   },
   "why_hackoverflow": {
     "reasons": [
-      {
-        "title": "Real World Problem Solving",
-        "description": "Tackle real-world challenges and create impactful solutions"
-      },
-      {
-        "title": "Networking Opportunities",
-        "description": "Connect with like-minded tech enthusiasts and industry professionals"
-      },
-      {
-        "title": "Mentor Guided Innovation",
-        "description": "Get guidance from experienced mentors and industry experts"
-      },
-      {
-        "title": "Networking & Jamming Sessions",
-        "description": "Participate in collaborative sessions and build lasting connections"
-      },
-      {
-        "title": "Unforgettable Goodies",
-        "description": "Win exciting prizes, swags, and memorable experiences"
-      }
+      { "title": "Real World Problem Solving", "description": "Tackle real-world challenges and create impactful solutions" },
+      { "title": "Networking Opportunities", "description": "Connect with like-minded tech enthusiasts and industry professionals" },
+      { "title": "Mentor Guided Innovation", "description": "Get guidance from experienced mentors and industry experts" },
+      { "title": "Networking & Jamming Sessions", "description": "Participate in collaborative sessions and build lasting connections" },
+      { "title": "Unforgettable Goodies", "description": "Win exciting prizes, swags, and memorable experiences" }
     ]
   },
   "schedule": {
@@ -197,46 +182,26 @@
       "max": 4
     },
     "process": [
-      {
-        "step": 1,
-        "title": "Registration",
-        "description": "The registration fee is set at Rs 500 per team member, and each team can consist of 3 to 4 members. Please ensure accurate information is provided during registration."
-      },
-      {
-        "step": 2,
-        "title": "Project Idea Submission",
-        "description": "Each team is required to submit a comprehensive project idea that aligns with the theme of the Hackathon."
-      },
-      {
-        "step": 3,
-        "title": "Evaluation Criteria",
-        "description": "We will evaluate the project ideas based on creativity, technical feasibility, and relevance to the theme."
-      },
-      {
-        "step": 4,
-        "title": "Selection Announcement",
-        "description": "Shortlisted teams will receive detailed instructions and further steps on their registered email address."
-      },
-      {
-        "step": 5,
-        "title": "Payment Confirmation",
-        "description": "Selected teams are required to pay the registration fee of Rs 500 per team member to secure their team's position in hackathon."
-      }
+      { "step": 1, "title": "Registration", "description": "The registration fee is set at Rs 500 per team member, and each team can consist of 3 to 4 members. Please ensure accurate information is provided during registration." },
+      { "step": 2, "title": "Project Idea Submission", "description": "Each team is required to submit a comprehensive project idea that aligns with the theme of the Hackathon." },
+      { "step": 3, "title": "Evaluation Criteria", "description": "We will evaluate the project ideas based on creativity, technical feasibility, and relevance to the theme." },
+      { "step": 4, "title": "Selection Announcement", "description": "Shortlisted teams will receive detailed instructions and further steps on their registered email address." },
+      { "step": 5, "title": "Payment Confirmation", "description": "Selected teams are required to pay the registration fee of Rs 500 per team member to secure their team's position in hackathon." }
     ]
   },
   "team": {
-"mentor": [
-  {
-    "name": "Nirav — Frontend Developer, UI/UX Designer, Creative Technologist",
-    "role": "MENTOR | Frontend Engineer | UI/UX Guide",
-    "description": "Builds scalable, high-performance web experiences using modern stacks, design systems, and UI/UX engineering. Guides projects with clean architecture and visual thinking. Based in Mumbai, India.",
-    "Aura_level": "PROFESSIONAL",
-    "status": "ACTIVE MENTOR"
-  }
-],
+    "mentor": [
+      {
+        "name": "Nirav — Frontend Developer, UI/UX Designer, Creative Technologist",
+        "role": "MENTOR | Frontend Engineer | UI/UX Guide",
+        "description": "Builds scalable, high-performance web experiences using modern stacks, design systems, and UI/UX engineering. Guides projects with clean architecture and visual thinking. Based in Mumbai, India.",
+        "Aura_level": "Aura still farming ",
+        "status": "ACTIVE MENTOR"
+      }
+    ],
     "leads": [
-      { "name": "Darin Peringalloor", "role": "HackOverflow 4.0 Lead" },
-      { "name": "Sampriti Dogra", "role": "HackOverflow 4.0 Lead" }
+      { "name": "Sampriti Dongra", "role": "HackOverflow 4.0 Lead", "class": "BE", "div": "A" },
+      { "name": "Darin Joy Peringalloor", "role": "HackOverflow 4.0 Lead", "class": "BE", "div": "C" }
     ],
     "faculty_coordinators": [
       { "name": "Prof. Rutvij Mane", "role": "Faculty Coordinator" },
@@ -244,143 +209,150 @@
       { "name": "Prof. Pradnya Patil", "role": "Faculty Coordinator" }
     ],
     "heads": [
-      {"name": "Parth Bhoir — the server guy who maintains the home server, and the entire HackOverflow infrastructure is sustained on that server","role": "Event Head"},
-      { "name": "Chetan Jadhav", "role": "Technical Head & Publicity Head" },
-      { "name": "Rohan Gharat", "role": "Media Head" },
-      { "name": "Aarya Karpe", "role": "Graphics Head" },
-      { "name": "Ashutosh Chavan - if 'aab toh paise hi paisa hoga' was a person", "role": "Finance Head" },
-      { "name": "Aayush Gunjal", "role": "Management Head & Publicity Head" },
-      { "name": "Midhun Mohandas - also know as 'i am so tall , i am very tall' guy", "role": "PR/BD Head" },
-      { "name": "Richa Shringarpure", "role": "Documentation Head" },
-      { "name": "Vedanti Patil", "role": "Decor Head" },
-      { "name": "Sharayu Patil", "role": "Decor Head" },
-      { "name": "Saksham Tiwari ", "role": "Outreach Head" },
-      { "name": "Advait Patil - also knows as ADY the Blender guy", "role": "Motion Graphics Head" }
+      { "name": "Parth Bhoir", "role": "Event Head", "class": "BE", "div": "A" },
+      { "name": "Chetan Jadhav", "role": "Technical Head & Publicity Head", "class": "BE", "div": "A" },
+      { "name": "Rohan Gharat", "role": "Media Head", "class": "BE", "div": "A" },
+      { "name": "Aarya Karpe", "role": "Graphics Head", "class": "TE", "div": "A" },
+      { "name": "Ashutosh Chavan", "role": "Finance Head", "class": "BE", "div": "A" },
+      { "name": "Aayush Gunjal", "role": "Management Head & Publicity Head", "class": "BE", "div": "A" },
+      { "name": "Midhun Mohandas", "role": "PR/BD Head", "class": "BE", "div": "A" },
+      { "name": "Richa Shrungarpure", "role": "Documentation Head", "class": "BE", "div": "C" },
+      { "name": "Vedanti Patil", "role": "Creativity Head", "class": "BE", "div": "C" },
+      { "name": "Sharayu Patil", "role": "Creativity Head", "class": "BE", "div": "C" },
+      { "name": "Saksham Tiwari", "role": "Outreach Head", "class": "BE", "div": "C" },
+      { "name": "Advait Patil", "role": "Motion Graphics Head", "class": "BE", "div": "A" }
     ]
   },
   "team_members": {
-    "student_coordinators": [
-      { "name": "Shreyanshi Srivastava", "designation": "Student coordinator", "year": "BE B" },
-      { "name": "Yash Kumbhar", "designation": "Student Coordinator", "year": "BE B" }
-    ],
-    "pr_team": {
-      "heads": [
-        { "name": "Anushka Kadam", "designation": "PR Head", "year": "BE A" },
-        { "name": "Tanay Jadhav", "designation": "PR Head", "year": "BE A" }
+    "event_team": {
+      "head": [
+        { "name": "Parth Bhoir", "designation": "Event Head", "class": "BE", "div": "A" }
       ],
       "members": [
-        { "name": "Midhun Mohandas", "designation": "PR Team Member", "year": "TE A" },
-        { "name": "Harsh Patil", "designation": "PR Team Member", "year": "TE - B" },
-        { "name": "Mohammad Sonde", "designation": "PR TEAM MEMBER", "year": "SE C" },
-        { "name": "Parth Verma", "designation": "PR Team Member", "year": "SE-B" },
-        { "name": "Janhvi", "designation": "PR Team Member", "year": "TE - A" },
-        { "name": "Aditya Pandey", "designation": "PR Team Member", "year": "TE - B" },
-        { "name": "Sampriti Dogra", "designation": "PR Team Member", "year": "TE A" },
-        { "name": "Sourabh Gokave", "designation": "PR Team Member", "year": "TE A" },
-        { "name": "Pratik Nikam", "designation": "PR Team Member", "year": "SE-B" },
-        { "name": "Suman", "designation": "PR Team Member", "year": "SE-A" }
+        { "name": "Parth More", "designation": "Event Team Member", "class": "TE", "div": "B" },
+        { "name": "Saloni Agalawe", "designation": "Event Team Member", "class": "SE", "div": "A" },
+        { "name": "Atharv Chavan", "designation": "Event Team Member", "class": "SE", "div": "A" },
+        { "name": "Yash Shinde", "designation": "Event Team Member", "class": "SE", "div": "A" },
+        { "name": "Satyam Pandey", "designation": "Event Team Member", "class": "SE", "div": "B" }
+      ]
+    },
+    "media_team": {
+      "head": [
+        { "name": "Rohan Gharat", "designation": "Media Head", "class": "BE", "div": "A" }
+      ],
+      "members": [
+        { "name": "Paras Thakur", "designation": "Media Team Member", "class": "BE", "div": "C" },
+        { "name": "Rohit Shigwan", "designation": "Media Team Member", "class": "TE", "div": "B" },
+        { "name": "Tejas Patil", "designation": "Media Team Member", "class": "TE", "div": "B" },
+        { "name": "Shravani Gaikwad", "designation": "Media Team Member", "class": "SE", "div": "A" },
+        { "name": "Aarya Bhoir", "designation": "Media Team Member", "class": "SE", "div": "A" },
+        { "name": "Niyati Sharma", "designation": "Media Team Member", "class": "SE", "div": "C" }
       ]
     },
     "graphics_team": {
       "head": [
-        { "name": "Viraj Kadam", "designation": "Graphics Head", "year": "BE A" }
+        { "name": "Aarya Karpe", "designation": "Graphics Head", "class": "TE", "div": "A" }
       ],
       "members": [
-        { "name": "Advait Patil", "designation": "Graphics team member", "year": "TE B" },
-        { "name": "Aarya Karpe", "designation": "Graphics Team Member", "year": "SE-A" },
-        { "name": "Manasi Patil", "designation": "Graphics team member", "year": "SE B" },
-        { "name": "Sushant", "designation": "Graphics Team Member", "year": "SE - A" }
-      ]
-    },
-    "publicity_team": {
-      "head": [
-        { "name": "Shagun Jha", "designation": "Publicity and management Head", "year": "BE A" }
-      ],
-      "members": [
-        { "name": "Tanvi Gharat", "designation": "publicity member", "year": "TE A" },
-        { "name": "Atharav", "designation": "Publicity Team Member", "year": "TE B" },
-        { "name": "Yash Torane", "designation": "Publicity Team Member", "year": "TE C" },
-        { "name": "Chetan Jadhav", "designation": "Publicity Team Member", "year": "TE A" },
-        { "name": "Parth More", "designation": "Publicity Team Member", "year": "SE-B" },
-        { "name": "Smit", "designation": "publicity team member", "year": "SE-B" },
-        { "name": "Mansi Phalak", "designation": "publicity team member", "year": "SE-B" },
-        { "name": "Prathamesh Pabale", "designation": "Publicity Team Member", "year": "TE - B" },
-        { "name": "Pragati Patil", "designation": "Publicity Team Member", "year": "SE-B" }
-      ]
-    },
-    "management_team": {
-      "members": [
-        { "name": "Kunal Mahajan", "designation": "Management Team Member", "year": "SE-B" },
-        { "name": "Aayush Gunjal", "designation": "Management Team Member", "year": "TE A" }
-      ]
-    },
-    "event_team": {
-      "head": [
-        { "name": "Parth Bhoir", "designation": "Event", "year": "TE A" }
-      ],
-      "members": [
-        { "name": "Saksham Tiwari", "designation": "Event team member", "year": "TE C" },
-        { "name": "Richa", "designation": "Event team member", "year": "TE C" },
-        { "name": "Amar Tiwari", "designation": "event team member", "year": "SE - C" }
-      ]
-    },
-    "decor_team": {
-      "head": [
-        { "name": "Disha Thombare", "designation": "Decor Head", "year": "BE A" }
-      ],
-      "incharge": [
-        { "name": "Darin", "designation": "Decor Incharge", "year": "TE - C" }
-      ],
-      "members": [
-        { "name": "Devayani", "designation": "Decor team member", "year": "SE - C" },
-        { "name": "Arpita", "designation": "Decor team member", "year": "SE-C" },
-        { "name": "Pooja Patil", "designation": "Decor team member", "year": "TE - B" },
-        { "name": "prarthana", "designation": "Decor team member", "year": "SE-B" },
-        { "name": "purva", "designation": "Decor Team Member", "year": "SE-B" },
-        { "name": "Sharayu", "designation": "Decor Team Member", "year": "TE - C" },
-        { "name": "Sanika Surve", "designation": "Decor team member", "year": "TE - B" },
-        { "name": "Shruti Patil", "designation": "Decor Team Member", "year": "TE - C" },
-        { "name": "Shruti", "designation": "Decor Team Member", "year": "SE - A" },
-        { "name": "Shubham", "designation": "Decor", "year": "TE -C" },
-        { "name": "Siddhi Gharat", "designation": "Decor Team member", "year": "TE A" },
-        { "name": "Soham", "designation": "Decor Team member", "year": "TE - C" },
-        { "name": "Vedanti", "designation": "Decor Team member", "year": "TE - C" },
-        { "name": "Vrushali Patil", "designation": "Decor Team Member", "year": "SE-B" },
-        { "name": "Shardul Thombare", "designation": "Decoration Team Member", "year": "SE-B" }
-      ]
-    },
-    "technical_team": {
-      "head": [
-        { "name": "Vinayak Sawant", "designation": "Technical Head", "year": "BE B" }
-      ],
-      "members": [
-        { "name": "Rohit Potdar", "designation": "Technical team member", "year": "T.E - C" },
-        { "name": "Diksha Thorve", "designation": "Technical Team member", "year": "SE-B" },
-        { "name": "Diksha Mhaskar", "designation": "Technical team member", "year": "SE-B" },
-        { "name": "Vivek Kokambe", "designation": "Technical team member", "year": "SE-B" }
-      ]
-    },
-    "media_team": {
-      "members": [
-        { "name": "Paras Thakur", "designation": "Media", "year": "TE-C" },
-        { "name": "Rohan", "designation": "Media", "year": "TE A" },
-        { "name": "Sanskar", "designation": "Media", "year": "TE C" },
-        { "name": "Sujal Bhandarge", "designation": "Media", "year": "SE A" },
-        { "name": "Rohit", "designation": "Media", "year": "SE-B" }
+        { "name": "Karan Pendhari", "designation": "Graphics Team Member", "class": "BE", "div": "B" },
+        { "name": "Shreyash Bhuikot", "designation": "Graphics Team Member", "class": "SE", "div": "C" }
       ]
     },
     "documentation_team": {
       "head": [
-        { "name": "Pallavi", "designation": "Documentation Head", "year": "TE B" }
+        { "name": "Richa Shrungarpure", "designation": "Documentation Head", "class": "BE", "div": "C" }
       ],
-      "coordinator": [
-        { "name": "Shreesh Vichare", "designation": "Documentation Coordinator", "year": "TE C" }
+      "members": [
+        { "name": "Anish Kalekar", "designation": "Documentation Team Member", "class": "TE", "div": "A" },
+        { "name": "Arya Dhopte", "designation": "Documentation Team Member", "class": "SE", "div": "A" }
+      ]
+    },
+    "technical_team": {
+      "head": [
+        { "name": "Chetan Jadhav", "designation": "Technical Head", "class": "BE", "div": "A" }
+      ],
+      "members": [
+        { "name": "Hemant Bhatt", "designation": "Technical Team Member", "class": "BE", "div": "A" },
+        { "name": "Sanket Jagadale", "designation": "Technical Team Member", "class": "TE", "div": "A" },
+        { "name": "Sharwari Shinde", "designation": "Technical Team Member", "class": "SE", "div": "C" }
+      ]
+    },
+    "pr_team": {
+      "head": [
+        { "name": "Midhun Mohandas", "designation": "PR/BD Head", "class": "BE", "div": "A" }
+      ],
+      "members": [
+        { "name": "Aditi Gavade", "designation": "PR Team Member", "class": "BE", "div": "A" },
+        { "name": "Sanika Deshmukh", "designation": "PR Team Member", "class": "TE", "div": "A" },
+        { "name": "Aaditya Mahajan", "designation": "PR Team Member", "class": "TE", "div": "B" },
+        { "name": "Ayush Popkar", "designation": "PR Team Member", "class": "SE", "div": "B" },
+        { "name": "Rajdeep Chatale", "designation": "PR Team Member", "class": "SE", "div": "A" }
+      ]
+    },
+    "management_team": {
+      "head": [
+        { "name": "Aayush Gunjal", "designation": "Management Head", "class": "BE", "div": "A" }
+      ],
+      "members": [
+        { "name": "Mansi Phalak", "designation": "Management Team Member", "class": "TE", "div": "B" },
+        { "name": "Kalyani Patil", "designation": "Management Team Member", "class": "SE", "div": "B" },
+        { "name": "Sanika Kadam", "designation": "Management Team Member", "class": "SE", "div": "B" },
+        { "name": "Rakesh Kardali", "designation": "Management Team Member", "class": "SE", "div": "B" },
+        { "name": "Kunal Mahajan", "designation": "Management Team Member", "class": "TE", "div": "B" }
+      ]
+    },
+    "creativity_team": {
+      "heads": [
+        { "name": "Vedanti Patil", "designation": "Creativity Head", "class": "BE", "div": "C" },
+        { "name": "Sharayu Patil", "designation": "Creativity Head", "class": "BE", "div": "C" }
+      ],
+      "members": [
+        { "name": "Abhinav Shelar", "designation": "Creativity Team Member", "class": "TE", "div": "A" },
+        { "name": "Sujay Babar", "designation": "Creativity Team Member", "class": "TE", "div": "A" },
+        { "name": "Bhushan Dongare", "designation": "Creativity Team Member", "class": "TE", "div": "A" },
+        { "name": "Shruti Patil", "designation": "Creativity Team Member", "class": "TE", "div": "B" },
+        { "name": "Shardul Thombare", "designation": "Creativity Team Member", "class": "TE", "div": "B" },
+        { "name": "Pratik Patil", "designation": "Creativity Team Member", "class": "TE", "div": "C" },
+        { "name": "Prachiti Nigade", "designation": "Creativity Team Member", "class": "SE", "div": "B" },
+        { "name": "Bhoomi Singh", "designation": "Creativity Team Member", "class": "SE", "div": "B" },
+        { "name": "Pranjal Patil", "designation": "Creativity Team Member", "class": "SE", "div": "B" },
+        { "name": "Sanskruti", "designation": "Creativity Team Member", "class": "SE", "div": "B" }
       ]
     },
     "finance_team": {
+      "head": [
+        { "name": "Ashutosh Chavan", "designation": "Finance Head", "class": "BE", "div": "A" }
+      ],
       "members": [
-        { "name": "Ashutosh Chavan", "designation": "Finance", "year": "TE A" }
+        { "name": "Smit Randhir", "designation": "Finance Team Member", "class": "TE", "div": "B" },
+        { "name": "Dhanashree Mohite", "designation": "Finance Team Member", "class": "SE", "div": "B" }
       ]
+    },
+    "publicity_team": {
+      "heads": [
+        { "name": "Aayush Gunjal", "designation": "Publicity Head", "class": "BE", "div": "A" },
+        { "name": "Chetan Jadhav", "designation": "Publicity Head", "class": "BE", "div": "A" }
+      ],
+      "members": [
+        { "name": "Aditya Dange", "designation": "Publicity Team Member", "class": "TE", "div": "A" },
+        { "name": "Chaitanya Bhusari", "designation": "Publicity Team Member", "class": "TE", "div": "A" },
+        { "name": "Roshan Barve", "designation": "Publicity Team Member", "class": "TE", "div": "A" },
+        { "name": "Shreya Ingle", "designation": "Publicity Team Member", "class": "SE", "div": "C" },
+        { "name": "Sanskar Panchal", "designation": "Publicity Team Member", "class": "SE", "div": "B" },
+        { "name": "Sanika Patil", "designation": "Publicity Team Member", "class": "SE", "div": "C" }
+      ]
+    },
+    "outreach_team": {
+      "head": [
+        { "name": "Saksham Tiwari", "designation": "Outreach Head", "class": "BE", "div": "C" }
+      ],
+      "members": []
+    },
+    "motion_graphics_team": {
+      "head": [
+        { "name": "Advait Patil", "designation": "Motion Graphics Head", "class": "BE", "div": "A" }
+      ],
+      "members": []
     }
   },
   "contact": {
@@ -397,42 +369,15 @@
     }
   },
   "faqs": [
-    {
-      "question": "Can I participate if I'm a beginner?",
-      "answer": "Yes! HackOverflow welcomes participants of all skill levels."
-    },
-    {
-      "question": "How to register for the offline track?",
-      "answer": "Registration is open from December 25 to January 31. Visit the official website to register. The registration fee is Rs 500 per team member."
-    },
-    {
-      "question": "What is the maximum number of members allowed in a team?",
-      "answer": "Teams consist of 3 to 4 members."
-    },
-    {
-      "question": "How long is the hackathon going to last?",
-      "answer": "The hackathon lasts for 36 hours across 3 days (March 11-13, 2026)."
-    },
-    {
-      "question": "What are the perks every participant is going to get?",
-      "answer": "Participants get access to mentorship, networking opportunities, meals, free accommodation within campus, transport facilities, certificates, free goodies, and chances to win from a prize pool of ₹100,000+."
-    },
-    {
-      "question": "Will there be any mentorship sessions?",
-      "answer": "Yes, there will be mentorship sessions throughout the hackathon with industry experts and experienced faculty."
-    },
-    {
-      "question": "What food arrangements are in place?",
-      "answer": "Daily 3 meals (Breakfast, Lunch, Dinner) will be provided during the event within the campus."
-    },
-    {
-      "question": "Is accommodation provided?",
-      "answer": "Yes, free accommodation facility is available within the campus for all participants."
-    },
-    {
-      "question": "Is transportation provided?",
-      "answer": "Yes, bus facility for pickup from Pillai College of Engineering, Panvel is available."
-    }
+    { "question": "Can I participate if I'm a beginner?", "answer": "Yes! HackOverflow welcomes participants of all skill levels." },
+    { "question": "How to register for the offline track?", "answer": "Registration is open from December 25 to January 31. Visit the official website to register. The registration fee is Rs 500 per team member." },
+    { "question": "What is the maximum number of members allowed in a team?", "answer": "Teams consist of 3 to 4 members." },
+    { "question": "How long is the hackathon going to last?", "answer": "The hackathon lasts for 36 hours across 3 days (March 11-13, 2026)." },
+    { "question": "What are the perks every participant is going to get?", "answer": "Participants get access to mentorship, networking opportunities, meals, free accommodation within campus, transport facilities, certificates, free goodies, and chances to win from a prize pool of ₹100,000+." },
+    { "question": "Will there be any mentorship sessions?", "answer": "Yes, there will be mentorship sessions throughout the hackathon with industry experts and experienced faculty." },
+    { "question": "What food arrangements are in place?", "answer": "Daily 3 meals (Breakfast, Lunch, Dinner) will be provided during the event within the campus." },
+    { "question": "Is accommodation provided?", "answer": "Yes, free accommodation facility is available within the campus for all participants." },
+    { "question": "Is transportation provided?", "answer": "Yes, bus facility for pickup from Pillai College of Engineering, Panvel is available." }
   ],
   "theme": {
     "status": "To be announced",
