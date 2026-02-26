@@ -1,20 +1,12 @@
 import cron from 'node-cron';
 import { Client, TextChannel, EmbedBuilder } from 'discord.js';
-import { MongoClient, ObjectId } from 'mongodb';
+import { ObjectId } from 'mongodb';
+import { getMongoClient } from '../config/mongo';
 import { getHackathonData } from '../config/db-config';
 import { logScheduled, logError } from './logger';
 
-// ─── Dynamic message DB connection ───────────────────────────────────────────
-
-const MONGODB_URI = process.env.MONGODB_URI!;
-const DB_NAME     = process.env.MONGODB_DB ?? 'hackoverflow';
-const SCHED_COLL  = 'scheduled_messages';
-
-let _mongo: MongoClient | null = null;
-async function getMongo(): Promise<MongoClient> {
-  if (!_mongo) { _mongo = new MongoClient(MONGODB_URI); await _mongo.connect(); }
-  return _mongo;
-}
+const DB_NAME    = process.env.MONGODB_DB ?? 'hackoverflow';
+const SCHED_COLL = 'scheduled_messages';
 
 // ─── Hardcoded messages ───────────────────────────────────────────────────────
 
@@ -172,8 +164,7 @@ async function fireDynamic(discordClient: Client, doc: Record<string, any>): Pro
       await textChannel.send(doc.content as string);
     }
 
-    // Mark one-time as sent, update sentCount for all
-    const mongo = await getMongo();
+    const mongo  = await getMongoClient();
     const update =
       doc.scheduleType === 'once'
         ? { $set: { sent: true, lastSentAt: new Date() }, $inc: { sentCount: 1 } }
@@ -209,8 +200,8 @@ async function fireDynamic(discordClient: Client, doc: Record<string, any>): Pro
 
 async function syncDynamicMessages(discordClient: Client): Promise<void> {
   try {
-    const mongo  = await getMongo();
-    const docs   = await mongo
+    const mongo = await getMongoClient();
+    const docs  = await mongo
       .db(DB_NAME)
       .collection(SCHED_COLL)
       .find({ active: true, $or: [{ scheduleType: 'recurring' }, { scheduleType: 'once', sent: { $ne: true } }] })
@@ -218,7 +209,6 @@ async function syncDynamicMessages(discordClient: Client): Promise<void> {
 
     const activeIds = new Set(docs.map(d => d._id.toString()));
 
-    // Stop tasks for removed / disabled messages
     for (const [id, task] of dynamicTasks) {
       if (!activeIds.has(id)) {
         task.stop();
@@ -231,14 +221,12 @@ async function syncDynamicMessages(discordClient: Client): Promise<void> {
       const id = doc._id.toString();
 
       if (doc.scheduleType === 'once') {
-        // If send time has already passed and not sent, fire immediately
         if (new Date(doc.sendAt as Date) <= new Date()) {
           await fireDynamic(discordClient, doc as Record<string, unknown>);
         }
         continue;
       }
 
-      // Recurring — register if not already tracked
       if (doc.scheduleType === 'recurring') {
         if (dynamicTasks.has(id)) continue;
         if (!cron.validate(doc.cronExpression as string)) {
@@ -262,7 +250,6 @@ async function syncDynamicMessages(discordClient: Client): Promise<void> {
 export function setupScheduledMessages(discordClient: Client): void {
   console.log('Setting up scheduled messages...');
 
-  // Register hardcoded jobs
   hardcodedMessages.forEach((item) => {
     if (!cron.validate(item.cronExpression)) {
       console.error(`❌ Invalid cron expression: ${item.cronExpression}`);
@@ -303,7 +290,6 @@ export function setupScheduledMessages(discordClient: Client): void {
     console.log(`✅ Scheduled: ${item.description} (${item.cronExpression})`);
   });
 
-  // Sync dynamic messages immediately, then every 60s
   syncDynamicMessages(discordClient);
   setInterval(() => syncDynamicMessages(discordClient), 60_000);
   console.log('🔄 Dynamic message sync started (every 60s)');
