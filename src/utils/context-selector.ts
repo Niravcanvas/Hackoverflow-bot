@@ -27,18 +27,22 @@ function extractAllNamesFromData(hackathonData: any): string[] {
     clean.split(' ').forEach(part => { if (part.length > 2) names.push(part); });
   };
 
-  hackathonData.team?.mentor?.forEach((m: { name: string }) => addName(m.name));
-  hackathonData.team?.leads?.forEach((m: { name: string }) => addName(m.name));
-  hackathonData.team?.faculty_coordinators?.forEach((m: { name: string }) => addName(m.name));
-  hackathonData.team?.heads?.forEach((m: { name: string }) => addName(m.name));
+  // Helper — safely iterate something that might not be an array
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const safeForEach = (val: any, fn: (item: any) => void) => {
+    if (Array.isArray(val)) val.forEach(fn);
+  };
+
+  safeForEach(hackathonData.team?.mentor,               (m: { name: string }) => addName(m.name));
+  safeForEach(hackathonData.team?.leads,                (m: { name: string }) => addName(m.name));
+  safeForEach(hackathonData.team?.faculty_coordinators, (m: { name: string }) => addName(m.name));
+  safeForEach(hackathonData.team?.heads,                (m: { name: string }) => addName(m.name));
 
   const teamMembers = hackathonData.team_members as Record<string, Record<string, unknown>> | undefined;
   if (teamMembers) {
     Object.values(teamMembers).forEach((team) => {
       ['head', 'heads', 'members', 'coordinator', 'incharge'].forEach(key => {
-        if (Array.isArray(team[key])) {
-          (team[key] as { name: string }[]).forEach(m => addName(m.name));
-        }
+        safeForEach(team[key], (m: { name: string }) => addName(m.name));
       });
     });
   }
@@ -49,7 +53,10 @@ function extractAllNamesFromData(hackathonData: any): string[] {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function selectRelevantContext(userQuery: string): Promise<ContextData> {
   const hackathonData = await getHackathonData();
-  const query = userQuery.toLowerCase();
+
+  // Strip Discord mention syntax (<@ID>, <@!ID>) before topic detection
+  const query = userQuery.toLowerCase().replace(/<@!?\d+>/g, '').replace(/\s+/g, ' ').trim();
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const relevantInfo: any = {};
   const detectedTopics: string[] = [];
@@ -70,10 +77,11 @@ export async function selectRelevantContext(userQuery: string): Promise<ContextD
     'hackathon', 'organizer', 'when is', 'where is', 'how to join',
     'deadline', 'team size', 'eligibility', 'accommodation', 'food',
     'coordinator', 'lead', 'head', 'mentor', 'faculty', 'rasayani',
-    'venue', 'location', 'campus',
+    'venue', 'location', 'campus', 'jamming', 'jam', 'pitching', 'pitch',
+    'day 1', 'day 2', 'day 3', 'opening', 'closing', 'ceremony',
   ];
 
-  const hasGkIndicator = gkIndicators.some(i => query.includes(i));
+  const hasGkIndicator       = gkIndicators.some(i => query.includes(i));
   const hasHackathonIndicator = hackathonIndicators.some(i => query.includes(i));
 
   if (hasGkIndicator && !hasHackathonIndicator && !mentionsTeamMember) {
@@ -86,22 +94,23 @@ export async function selectRelevantContext(userQuery: string): Promise<ContextD
 
   // Always include basic info for hackathon questions
   relevantInfo.basic = {
-    name: hackathonData.name,
-    tagline: hackathonData.tagline,
-    dates: hackathonData.dates,
-    location: hackathonData.location,
-    contact: hackathonData.contact,
+    name:      hackathonData.name,
+    tagline:   hackathonData.tagline,
+    dates:     hackathonData.dates,
+    location:  hackathonData.location,
+    contact:   hackathonData.contact,
     organizer: hackathonData.organizer,
   };
 
-  if (['schedule','timing','time','day 1','day 2','day 3','when','agenda','itinerary'].some(k => query.includes(k))) {
+  if (['schedule','timing','time','day 1','day 2','day 3','when','agenda','itinerary',
+       'jamming','jam','pitching','pitch','opening','closing','ceremony'].some(k => query.includes(k))) {
     relevantInfo.schedule = hackathonData.schedule;
     detectedTopics.push('schedule');
   }
 
   if (['register','registration','sign up','how to join','fee','cost','eligibility','apply','deadline'].some(k => query.includes(k))) {
     relevantInfo.registration = hackathonData.registration;
-    relevantInfo.dates = hackathonData.dates;
+    relevantInfo.dates        = hackathonData.dates;
     detectedTopics.push('registration');
   }
 
@@ -110,18 +119,19 @@ export async function selectRelevantContext(userQuery: string): Promise<ContextD
      'member','contact person','role of','position of','phone','number','call','reach'].some(k => query.includes(k))
     || mentionsTeamMember
   ) {
-    relevantInfo.team = hackathonData.team;
+    relevantInfo.team         = hackathonData.team;
     relevantInfo.team_members = hackathonData.team_members;
     detectedTopics.push('team');
   }
 
   if (['prize','win','reward','money','cash','award','incentive'].some(k => query.includes(k))) {
-    relevantInfo.prizes = hackathonData.prizes;
+    relevantInfo.prizes     = hackathonData.prizes;
     relevantInfo.statistics = { prize_pool: hackathonData.statistics?.prize_pool };
     detectedTopics.push('prizes');
   }
 
-  if (['food','meal','accommodation','stay','transport','bus','facility','amenities','breakfast','lunch','dinner','lodging'].some(k => query.includes(k))) {
+  if (['food','meal','accommodation','stay','transport','bus','facility','amenities',
+       'breakfast','lunch','dinner','lodging'].some(k => query.includes(k))) {
     relevantInfo.facilities = hackathonData.facilities;
     detectedTopics.push('facilities');
   }
@@ -142,13 +152,13 @@ export async function selectRelevantContext(userQuery: string): Promise<ContextD
   }
 
   if (['about','why','what is','phcet','pillai','college','rasayani','background','history'].some(k => query.includes(k))) {
-    relevantInfo.about = hackathonData.about;
-    relevantInfo.why_hackoverflow = hackathonData.why_hackoverflow;
+    relevantInfo.about             = hackathonData.about;
+    relevantInfo.why_hackoverflow  = hackathonData.why_hackoverflow;
     detectedTopics.push('about');
   }
 
   if (['theme','topic','domain','category','project type','problem statement'].some(k => query.includes(k))) {
-    relevantInfo.theme = hackathonData.theme;
+    relevantInfo.theme              = hackathonData.theme;
     relevantInfo.project_categories = hackathonData.project_categories;
     detectedTopics.push('theme');
   }
@@ -160,16 +170,16 @@ export async function selectRelevantContext(userQuery: string): Promise<ContextD
 
   if (detectedTopics.length === 0) {
     relevantInfo.overview = {
-      name: hackathonData.name,
-      tagline: hackathonData.tagline,
-      organizer: hackathonData.organizer,
-      dates: hackathonData.dates,
-      location: hackathonData.location,
-      prizes: hackathonData.prizes,
+      name:       hackathonData.name,
+      tagline:    hackathonData.tagline,
+      organizer:  hackathonData.organizer,
+      dates:      hackathonData.dates,
+      location:   hackathonData.location,
+      prizes:     hackathonData.prizes,
       statistics: {
-        prize_pool: hackathonData.statistics?.prize_pool,
-        expected_hackers: hackathonData.statistics?.expected_hackers,
-        duration: hackathonData.statistics?.duration,
+        prize_pool:        hackathonData.statistics?.prize_pool,
+        expected_hackers:  hackathonData.statistics?.expected_hackers,
+        duration:          hackathonData.statistics?.duration,
       },
       why_hackoverflow: hackathonData.why_hackoverflow,
     };
@@ -219,6 +229,10 @@ TEAM MEMBER QUERIES - SPECIAL INSTRUCTIONS:
 - A person may appear in multiple teams — list ALL their roles
 - Include class and division when available (e.g., "BE A" = Bachelor of Engineering, Division A)
 - Format: "Person Name is the [Role] (Class Div)" or list multiple roles if applicable
+
+DISCORD MENTION HANDLING:
+- Messages may contain Discord mention syntax like <@123456789> — treat these as references to Discord users, not hackathon team members unless the name appears in context data
+- If asked "who is @SomeUser" and that person is not in the hackathon data, say: "I don't have information about that person in my hackathon data."
 
 RESPONSE GUIDELINES:
 - Simple questions: 1-2 sentences with exact information
