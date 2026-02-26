@@ -1,76 +1,68 @@
-import hackathonData from '../config/hackathon-data.json';
+import { getHackathonData } from '../config/db-config';
 
 /**
- * Intelligently select relevant context based on user query
- * This drastically reduces token usage by only including what's needed
+ * Intelligently select relevant context based on user query.
+ * All data is fetched from MongoDB (with 60 s cache) so the dashboard
+ * can update it live without restarting the bot.
  */
 
 export interface ContextData {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   relevantInfo: any;
   detectedTopics: string[];
   isGeneralKnowledge: boolean;
 }
 
 /**
- * Dynamically extract all names from the JSON so we never miss anyone
+ * Dynamically extract all team member names from the JSON so we never miss anyone.
  */
-function extractAllNamesFromData(): string[] {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractAllNamesFromData(hackathonData: any): string[] {
   const names: string[] = [];
 
   const addName = (name: string) => {
     if (!name) return;
     const clean = name.toLowerCase().trim();
     names.push(clean);
-    // Also add individual parts (first name, last name)
-    clean.split(' ').forEach(part => {
-      if (part.length > 2) names.push(part);
-    });
+    clean.split(' ').forEach(part => { if (part.length > 2) names.push(part); });
   };
 
-  // Mentor
-  hackathonData.team.mentor?.forEach((m: any) => addName(m.name));
+  hackathonData.team?.mentor?.forEach((m: { name: string }) => addName(m.name));
+  hackathonData.team?.leads?.forEach((m: { name: string }) => addName(m.name));
+  hackathonData.team?.faculty_coordinators?.forEach((m: { name: string }) => addName(m.name));
+  hackathonData.team?.heads?.forEach((m: { name: string }) => addName(m.name));
 
-  // Leads
-  hackathonData.team.leads?.forEach((m: any) => addName(m.name));
-
-  // Faculty coordinators
-  hackathonData.team.faculty_coordinators?.forEach((m: any) => addName(m.name));
-
-  // Heads
-  hackathonData.team.heads?.forEach((m: any) => addName(m.name));
-
-  // All team_members sub-teams
-  const teamMembers = hackathonData.team_members as Record<string, any>;
-  Object.values(teamMembers).forEach((team: any) => {
-    // Each team can have head, heads, members, coordinator, incharge, etc.
-    ['head', 'heads', 'members', 'coordinator', 'incharge'].forEach(key => {
-      if (Array.isArray(team[key])) {
-        team[key].forEach((m: any) => addName(m.name));
-      }
+  const teamMembers = hackathonData.team_members as Record<string, Record<string, unknown>> | undefined;
+  if (teamMembers) {
+    Object.values(teamMembers).forEach((team) => {
+      ['head', 'heads', 'members', 'coordinator', 'incharge'].forEach(key => {
+        if (Array.isArray(team[key])) {
+          (team[key] as { name: string }[]).forEach(m => addName(m.name));
+        }
+      });
     });
-  });
+  }
 
-  // Deduplicate
   return [...new Set(names)].filter(Boolean);
 }
 
-// Build name list once at module load (not on every request)
-const ALL_TEAM_NAMES = extractAllNamesFromData();
-
-export function selectRelevantContext(userQuery: string): ContextData {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function selectRelevantContext(userQuery: string): Promise<ContextData> {
+  const hackathonData = await getHackathonData();
   const query = userQuery.toLowerCase();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const relevantInfo: any = {};
   const detectedTopics: string[] = [];
-  let isGeneralKnowledge = false;
 
-  // Dynamically check if query mentions any team member name from JSON
-  const mentionsTeamMember = ALL_TEAM_NAMES.some(name => query.includes(name));
+  // Build name list fresh from (cached) data — negligible cost
+  const allTeamNames = extractAllNamesFromData(hackathonData);
+  const mentionsTeamMember = allTeamNames.some(name => query.includes(name));
 
   const gkIndicators = [
     'what is', 'who is', 'who was', 'explain', 'define', 'how does',
     'why does', 'tell me about', 'what are the benefits of',
     'difference between', 'compare', 'how to learn', 'what does',
-    'history of', 'meaning of', 'tutorial', 'example of'
+    'history of', 'meaning of', 'tutorial', 'example of',
   ];
 
   const hackathonIndicators = [
@@ -78,24 +70,16 @@ export function selectRelevantContext(userQuery: string): ContextData {
     'hackathon', 'organizer', 'when is', 'where is', 'how to join',
     'deadline', 'team size', 'eligibility', 'accommodation', 'food',
     'coordinator', 'lead', 'head', 'mentor', 'faculty', 'rasayani',
-    'venue', 'location', 'campus'
+    'venue', 'location', 'campus',
   ];
 
-  const hasGkIndicator = gkIndicators.some(indicator => query.includes(indicator));
-  const hasHackathonIndicator = hackathonIndicators.some(indicator => query.includes(indicator));
+  const hasGkIndicator = gkIndicators.some(i => query.includes(i));
+  const hasHackathonIndicator = hackathonIndicators.some(i => query.includes(i));
 
-  // If it mentions a team member name, always treat as hackathon question
   if (hasGkIndicator && !hasHackathonIndicator && !mentionsTeamMember) {
-    isGeneralKnowledge = true;
-    detectedTopics.push('general_knowledge');
     return {
-      relevantInfo: {
-        basic: {
-          name: hackathonData.name,
-          contact: hackathonData.contact.email,
-        }
-      },
-      detectedTopics,
+      relevantInfo: { basic: { name: hackathonData.name, contact: hackathonData.contact?.email } },
+      detectedTopics: ['general_knowledge'],
       isGeneralKnowledge: true,
     };
   }
@@ -110,188 +94,70 @@ export function selectRelevantContext(userQuery: string): ContextData {
     organizer: hackathonData.organizer,
   };
 
-  // Schedule keywords
-  if (
-    query.includes('schedule') ||
-    query.includes('timing') ||
-    query.includes('time') ||
-    query.includes('day 1') ||
-    query.includes('day 2') ||
-    query.includes('day 3') ||
-    query.includes('when') ||
-    query.includes('agenda') ||
-    query.includes('itinerary')
-  ) {
+  if (['schedule','timing','time','day 1','day 2','day 3','when','agenda','itinerary'].some(k => query.includes(k))) {
     relevantInfo.schedule = hackathonData.schedule;
     detectedTopics.push('schedule');
   }
 
-  // Registration keywords
-  if (
-    query.includes('register') ||
-    query.includes('registration') ||
-    query.includes('sign up') ||
-    query.includes('how to join') ||
-    query.includes('fee') ||
-    query.includes('cost') ||
-    query.includes('eligibility') ||
-    query.includes('apply') ||
-    query.includes('deadline')
-  ) {
+  if (['register','registration','sign up','how to join','fee','cost','eligibility','apply','deadline'].some(k => query.includes(k))) {
     relevantInfo.registration = hackathonData.registration;
     relevantInfo.dates = hackathonData.dates;
     detectedTopics.push('registration');
   }
 
-  // Team keywords — pulls BOTH team (heads/leads) AND team_members (all sub-teams)
   if (
-    query.includes('team') ||
-    query.includes('organizer') ||
-    query.includes('coordinator') ||
-    query.includes('lead') ||
-    query.includes('faculty') ||
-    query.includes('head') ||
-    query.includes('mentor') ||
-    query.includes('who is') ||
-    query.includes('who are') ||
-    query.includes('member') ||
-    query.includes('contact person') ||
-    query.includes('role of') ||
-    query.includes('position of') ||
-    query.includes('phone') ||
-    query.includes('number') ||
-    query.includes('call') ||
-    query.includes('reach') ||
-    mentionsTeamMember
+    ['team','organizer','coordinator','lead','faculty','head','mentor','who is','who are',
+     'member','contact person','role of','position of','phone','number','call','reach'].some(k => query.includes(k))
+    || mentionsTeamMember
   ) {
-    // Include both the leadership structure AND all sub-team members
     relevantInfo.team = hackathonData.team;
     relevantInfo.team_members = hackathonData.team_members;
     detectedTopics.push('team');
   }
 
-  // Prize keywords
-  if (
-    query.includes('prize') ||
-    query.includes('win') ||
-    query.includes('reward') ||
-    query.includes('money') ||
-    query.includes('cash') ||
-    query.includes('award') ||
-    query.includes('incentive')
-  ) {
+  if (['prize','win','reward','money','cash','award','incentive'].some(k => query.includes(k))) {
     relevantInfo.prizes = hackathonData.prizes;
-    relevantInfo.statistics = { prize_pool: hackathonData.statistics.prize_pool };
+    relevantInfo.statistics = { prize_pool: hackathonData.statistics?.prize_pool };
     detectedTopics.push('prizes');
   }
 
-  // Facilities keywords
-  if (
-    query.includes('food') ||
-    query.includes('meal') ||
-    query.includes('accommodation') ||
-    query.includes('stay') ||
-    query.includes('transport') ||
-    query.includes('bus') ||
-    query.includes('facility') ||
-    query.includes('amenities') ||
-    query.includes('breakfast') ||
-    query.includes('lunch') ||
-    query.includes('dinner') ||
-    query.includes('lodging')
-  ) {
+  if (['food','meal','accommodation','stay','transport','bus','facility','amenities','breakfast','lunch','dinner','lodging'].some(k => query.includes(k))) {
     relevantInfo.facilities = hackathonData.facilities;
     detectedTopics.push('facilities');
   }
 
-  // Statistics keywords
-  if (
-    query.includes('statistic') ||
-    query.includes('stats') ||
-    query.includes('how many') ||
-    query.includes('participant') ||
-    query.includes('previous') ||
-    query.includes('last year') ||
-    query.includes('hackoverflow 3') ||
-    query.includes('past edition')
-  ) {
+  if (['statistic','stats','how many','participant','previous','last year','hackoverflow 3','past edition'].some(k => query.includes(k))) {
     relevantInfo.statistics = hackathonData.statistics;
     detectedTopics.push('statistics');
   }
 
-  // FAQ keywords
-  if (
-    query.includes('faq') ||
-    query.includes('question') ||
-    query.includes('beginner') ||
-    query.includes('can i') ||
-    query.includes('am i eligible') ||
-    query.includes('requirements')
-  ) {
+  if (['faq','question','beginner','can i','am i eligible','requirements'].some(k => query.includes(k))) {
     relevantInfo.faqs = hackathonData.faqs;
     detectedTopics.push('faqs');
   }
 
-  // Perks keywords
-  if (
-    query.includes('perk') ||
-    query.includes('benefit') ||
-    query.includes('goodies') ||
-    query.includes('swag') ||
-    query.includes('certificate') ||
-    query.includes('gift') ||
-    query.includes('what do i get')
-  ) {
+  if (['perk','benefit','goodies','swag','certificate','gift','what do i get'].some(k => query.includes(k))) {
     relevantInfo.perks = hackathonData.perks;
     detectedTopics.push('perks');
   }
 
-  // About/Why keywords
-  if (
-    query.includes('about') ||
-    query.includes('why') ||
-    query.includes('what is') ||
-    query.includes('phcet') ||
-    query.includes('pillai') ||
-    query.includes('college') ||
-    query.includes('rasayani') ||
-    query.includes('background') ||
-    query.includes('history')
-  ) {
+  if (['about','why','what is','phcet','pillai','college','rasayani','background','history'].some(k => query.includes(k))) {
     relevantInfo.about = hackathonData.about;
     relevantInfo.why_hackoverflow = hackathonData.why_hackoverflow;
     detectedTopics.push('about');
   }
 
-  // Theme keywords
-  if (
-    query.includes('theme') ||
-    query.includes('topic') ||
-    query.includes('domain') ||
-    query.includes('category') ||
-    query.includes('project type') ||
-    query.includes('problem statement')
-  ) {
+  if (['theme','topic','domain','category','project type','problem statement'].some(k => query.includes(k))) {
     relevantInfo.theme = hackathonData.theme;
     relevantInfo.project_categories = hackathonData.project_categories;
     detectedTopics.push('theme');
   }
 
-  // Developer communities
-  if (
-    query.includes('club') ||
-    query.includes('community') ||
-    query.includes('gdg') ||
-    query.includes('csi') ||
-    query.includes('cybersecurity') ||
-    query.includes('geeksforgeeks') ||
-    query.includes('developer group')
-  ) {
+  if (['club','community','gdg','csi','cybersecurity','geeksforgeeks','developer group'].some(k => query.includes(k))) {
     relevantInfo.developer_communities = hackathonData.developer_communities;
     detectedTopics.push('communities');
   }
 
-  // If no specific topics detected, include general overview
   if (detectedTopics.length === 0) {
     relevantInfo.overview = {
       name: hackathonData.name,
@@ -301,41 +167,26 @@ export function selectRelevantContext(userQuery: string): ContextData {
       location: hackathonData.location,
       prizes: hackathonData.prizes,
       statistics: {
-        prize_pool: hackathonData.statistics.prize_pool,
-        expected_hackers: hackathonData.statistics.expected_hackers,
-        duration: hackathonData.statistics.duration,
+        prize_pool: hackathonData.statistics?.prize_pool,
+        expected_hackers: hackathonData.statistics?.expected_hackers,
+        duration: hackathonData.statistics?.duration,
       },
       why_hackoverflow: hackathonData.why_hackoverflow,
     };
     detectedTopics.push('general');
   }
 
-  return {
-    relevantInfo,
-    detectedTopics,
-    isGeneralKnowledge: false,
-  };
+  return { relevantInfo, detectedTopics, isGeneralKnowledge: false };
 }
 
-/**
- * Format the selected context into a concise string
- */
 export function formatContextForPrompt(contextData: ContextData): string {
   const { relevantInfo, detectedTopics, isGeneralKnowledge } = contextData;
-
   if (isGeneralKnowledge) {
-    return `CONTEXT: You are answering a general knowledge question. Keep it concise and educational.\nHackathon Contact: ${relevantInfo.basic.contact}`;
+    return `CONTEXT: You are answering a general knowledge question. Keep it concise and educational.\nHackathon Contact: ${relevantInfo.basic?.contact}`;
   }
-
-  let contextString = `RELEVANT HACKATHON INFO (Topics: ${detectedTopics.join(', ')}):\n`;
-  contextString += JSON.stringify(relevantInfo, null, 2);
-
-  return contextString;
+  return `RELEVANT HACKATHON INFO (Topics: ${detectedTopics.join(', ')}):\n${JSON.stringify(relevantInfo, null, 2)}`;
 }
 
-/**
- * Get a minimal system prompt (without heavy context)
- */
 export function getMinimalSystemPrompt(): string {
   return `You are Kernel, the official AI assistant for HackOverflow 4.0, a national-level hackathon organized by PHCET (Pillai HOC College of Engineering & Technology).
 
