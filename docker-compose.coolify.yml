@@ -29,8 +29,3 @@ services:
 networks:
   coolify:
     external: true
-```
-
-Also make sure your **Environment Variables** in Coolify include:
-```
-MONGODB_URI=mongodb://admin:hepoJvvFdtZ9glaNgk9Hd5S4U847Npb4ygw3SGLdpNmZfvHBluSU7XhXNk5KamzQ@vgg8k004csogwokwk48wc8w4:27017/?directConnection=true
